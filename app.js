@@ -1,6 +1,6 @@
 ﻿const STORAGE_KEY = "nederflow.v01";
 
-const APP_VERSION = "v0.8.0";
+const APP_VERSION = "v0.8.1";
 const levelOrder = ["A1", "A2", "A2+", "B1-", "B1", "B1+", "B2-", "B2", "B2+", "C1"];
 const skillNames = ["listening", "reading", "grammar", "writing"];
 
@@ -562,6 +562,8 @@ function defaultState() {
       activeGrammar: "omdat",
       selectedMaterialId: null,
       selectedWritingPromptId: null,
+      readingThemeFilter: "all",
+      writingTypeFilter: "all",
       grammarSource: null,
       shadowingLevel: "auto",
       shadowingRate: "normal",
@@ -696,6 +698,30 @@ function currentWritingPrompt() {
   const selected = writingPrompts.find((prompt) => prompt.id === state.ui.selectedWritingPromptId);
   if (selected) return selected;
   return writingPrompts[Math.min(writingPrompts.length - 1, Math.floor((state.profile.difficulty.writing || 2) / 3))];
+}
+
+function uniqueSorted(values) {
+  return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+function writingPromptType(prompt) {
+  const text = `${prompt.id} ${prompt.title} ${prompt.prompt}`.toLowerCase();
+  if (/opinion|mening|advantage|concern/.test(text)) return "Opinion";
+  if (/summary|summarize|samenvat/.test(text)) return "Summary";
+  if (/request|ask|question|aanvraag|status|feedback/.test(text)) return "Request";
+  if (/email|formal|supervisor|coordinator|gemeente|municipality|clinic|library/.test(text)) return "Email";
+  if (/message|bericht/.test(text)) return "Message";
+  return "Practice";
+}
+
+function filteredMaterials() {
+  const theme = state.ui.readingThemeFilter || "all";
+  return theme === "all" ? materials : materials.filter((material) => material.theme === theme);
+}
+
+function filteredWritingPrompts() {
+  const type = state.ui.writingTypeFilter || "all";
+  return type === "all" ? writingPrompts : writingPrompts.filter((prompt) => writingPromptType(prompt) === type);
 }
 
 function dueVocab() {
@@ -1391,20 +1417,32 @@ function renderMaterialSummary(material) {
 }
 
 function renderMaterialPicker(activeId) {
-  const active = getMaterial(activeId);
+  const themes = uniqueSorted(materials.map((material) => material.theme));
+  const visibleMaterials = filteredMaterials();
+  const fallback = visibleMaterials[0] || materials[0];
+  const active = visibleMaterials.some((material) => material.id === activeId) ? getMaterial(activeId) : fallback;
   return `
     <section class="panel" style="margin-bottom:16px">
       <div class="page-head" style="margin-bottom:10px">
         <div>
           <h2>Reading library</h2>
-          <p class="hint">${materials.length} controlled materials, mostly B1-B2. Choose one, or let NederFlow recommend the next one through sessions.</p>
+          <p class="hint">${visibleMaterials.length} of ${materials.length} controlled materials shown. Choose one, or let NederFlow recommend the next one through sessions.</p>
         </div>
+      </div>
+      <div class="form-field">
+        <label for="readingThemeFilter">Theme</label>
+        <select id="readingThemeFilter" data-reading-theme-filter>
+          <option value="all" ${state.ui.readingThemeFilter === "all" ? "selected" : ""}>All themes</option>
+          ${themes.map((theme) => `
+            <option value="${escapeHtml(theme)}" ${state.ui.readingThemeFilter === theme ? "selected" : ""}>${escapeHtml(theme)}</option>
+          `).join("")}
+        </select>
       </div>
       <div class="form-field">
         <label for="materialSelect">Choose reading material</label>
         <select id="materialSelect" data-select-material>
-          ${materials.map((material) => `
-            <option value="${escapeHtml(material.id)}" ${activeId === material.id ? "selected" : ""}>
+          ${visibleMaterials.map((material) => `
+            <option value="${escapeHtml(material.id)}" ${active.id === material.id ? "selected" : ""}>
               ${escapeHtml(material.level)} - ${escapeHtml(material.theme)} - ${escapeHtml(material.title)}
             </option>
           `).join("")}
@@ -1417,8 +1455,8 @@ function renderMaterialPicker(activeId) {
       <details style="margin-top:10px">
         <summary>Browse as cards</summary>
         <div class="choice-grid" style="margin-top:10px">
-        ${materials.map((material) => `
-          <button class="choice ${activeId === material.id ? "selected" : ""}" data-action="select-material" data-material-id="${material.id}">
+        ${visibleMaterials.map((material) => `
+          <button class="choice ${active.id === material.id ? "selected" : ""}" data-action="select-material" data-material-id="${material.id}">
             <strong>${escapeHtml(material.title)}</strong>
             <span>${escapeHtml(material.level)} · ${escapeHtml(material.theme)} · ${(material.focusTerms || []).slice(0, 3).map(escapeHtml).join(", ")}</span>
           </button>
@@ -1986,7 +2024,11 @@ function renderShadowLine(material, line, index, level) {
 }
 
 function renderReading() {
-  const material = currentMaterial();
+  let material = currentMaterial();
+  const visibleMaterials = filteredMaterials();
+  if (visibleMaterials.length && !visibleMaterials.some((item) => item.id === material.id)) {
+    material = visibleMaterials[0];
+  }
   return `
     <section class="page-head">
       <div>
@@ -2158,7 +2200,12 @@ function renderGrammarOutputFeedback(id) {
 }
 
 function renderWriting() {
-  const prompt = currentWritingPrompt();
+  let prompt = currentWritingPrompt();
+  const promptTypes = uniqueSorted(writingPrompts.map(writingPromptType));
+  const visiblePrompts = filteredWritingPrompts();
+  if (visiblePrompts.length && !visiblePrompts.some((item) => item.id === prompt.id)) {
+    prompt = visiblePrompts[0];
+  }
   return `
     <section class="page-head">
       <div>
@@ -2170,13 +2217,22 @@ function renderWriting() {
 
     <section class="panel" style="margin-bottom:16px">
       <h2>Writing library</h2>
-      <p class="hint">${writingPrompts.length} prompts, mostly B1-B2 formal email, opinion, summary, and request tasks.</p>
+      <p class="hint">${visiblePrompts.length} of ${writingPrompts.length} prompts shown.</p>
+      <div class="form-field" style="margin-top:10px">
+        <label for="writingTypeFilter">Type</label>
+        <select id="writingTypeFilter" data-writing-type-filter>
+          <option value="all" ${state.ui.writingTypeFilter === "all" ? "selected" : ""}>All types</option>
+          ${promptTypes.map((type) => `
+            <option value="${escapeHtml(type)}" ${state.ui.writingTypeFilter === type ? "selected" : ""}>${escapeHtml(type)}</option>
+          `).join("")}
+        </select>
+      </div>
       <div class="form-field" style="margin-top:10px">
         <label for="writingPromptSelect">Choose writing prompt</label>
         <select id="writingPromptSelect" data-select-writing-prompt>
-          ${writingPrompts.map((item) => `
+          ${visiblePrompts.map((item) => `
             <option value="${escapeHtml(item.id)}" ${prompt.id === item.id ? "selected" : ""}>
-              ${escapeHtml(item.level)} - ${escapeHtml(item.title)}
+              ${escapeHtml(item.level)} - ${escapeHtml(writingPromptType(item))} - ${escapeHtml(item.title)}
             </option>
           `).join("")}
         </select>
@@ -2184,10 +2240,10 @@ function renderWriting() {
       <details style="margin-top:10px">
         <summary>Browse as cards</summary>
         <div class="choice-grid" style="margin-top:10px">
-          ${writingPrompts.map((item) => `
+          ${visiblePrompts.map((item) => `
             <button class="choice ${prompt.id === item.id ? "selected" : ""}" data-action="select-writing-prompt" data-prompt-id="${item.id}">
               <strong>${escapeHtml(item.title)}</strong>
-              <span>${escapeHtml(item.level)}</span>
+              <span>${escapeHtml(item.level)} · ${escapeHtml(writingPromptType(item))}</span>
             </button>
           `).join("")}
         </div>
@@ -2599,8 +2655,25 @@ document.addEventListener("change", (event) => {
     render();
     return;
   }
+  if (input.matches?.("[data-reading-theme-filter]")) {
+    state.ui.readingThemeFilter = input.value;
+    const first = filteredMaterials()[0];
+    state.ui.selectedMaterialId = first?.id || null;
+    saveState();
+    render();
+    return;
+  }
   if (input.matches?.("[data-select-writing-prompt]")) {
     state.ui.selectedWritingPromptId = input.value;
+    state.ui.writingFeedback = null;
+    saveState();
+    render();
+    return;
+  }
+  if (input.matches?.("[data-writing-type-filter]")) {
+    state.ui.writingTypeFilter = input.value;
+    const first = filteredWritingPrompts()[0];
+    state.ui.selectedWritingPromptId = first?.id || null;
     state.ui.writingFeedback = null;
     saveState();
     render();

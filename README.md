@@ -10,6 +10,7 @@ NederFlow is a mobile-friendly prototype for a personal Dutch learning coach. Th
 - Optional extensive-listening links for real public Dutch sources.
 - Reading library with manual material selection.
 - Writing library with manual prompt selection.
+- Reading theme filter and writing type filter.
 - Reading practice with clickable vocabulary.
 - Inline grammar highlights inside reading text.
 - Vocabulary cards with English meaning, usage, examples, and review dates.
@@ -62,7 +63,7 @@ The current materials are controlled training texts designed for the prototype. 
 
 External listening links point to public Dutch sources such as NOS Jeugdjournaal, NPO Radio 1, and Oefenen.nl. NederFlow links out to those sources instead of copying or scraping their content. Those links are deliberately treated as optional extensive listening, not as the main A2-B1 training path.
 
-As of v0.8.0, the controlled library includes 212 reading materials and 109 writing prompts, with the expanded corpus aimed at B1-B2 reading and practical writing.
+As of v0.8.1, the controlled library includes 212 reading materials and 109 writing prompts, with the expanded corpus aimed at B1-B2 reading and practical writing.
 
 ## Next implementation steps
 
