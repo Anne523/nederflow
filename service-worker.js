@@ -1,12 +1,12 @@
-const CACHE_NAME = "nederflow-v063";
+const CACHE_NAME = "nederflow-v080";
 const CORE_ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=0.6.3",
-  "./content.js?v=0.6.3",
-  "./audio-manifest.js?v=0.6.3",
-  "./app.js?v=0.6.3",
-  "./manifest.webmanifest?v=0.6.3",
+  "./styles.css?v=0.8.0",
+  "./content.js?v=0.8.0",
+  "./audio-manifest.js?v=0.8.0",
+  "./app.js?v=0.8.0",
+  "./manifest.webmanifest?v=0.8.0",
   "./assets/icon.svg",
   "./assets/icon-192.png",
   "./assets/icon-512.png"

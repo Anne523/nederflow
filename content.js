@@ -1,5 +1,5 @@
 window.NEDERFLOW_CONTENT = {
-  version: "0.2",
+  version: "0.4",
   sourcePolicy: {
     summary:
       "Prototype materials are controlled AI-style training texts. Future real-world input should come from curated, lawful sources or user-provided text, then be adapted for CEFR level and recycling goals.",
@@ -22,7 +22,7 @@ window.NEDERFLOW_CONTENT = {
     ]
   },
   levelOrder: ["A1", "A2", "A2+", "B1-", "B1", "B1+", "B2-", "B2", "B2+", "C1"],
-  skillNames: ["listening", "reading", "grammar", "writing", "speaking"],
+  skillNames: ["listening", "reading", "grammar", "writing"],
   lexicon: {
     maatregelen: {
       translation: "measures",
@@ -836,6 +836,300 @@ window.NEDERFLOW_CONTENT = {
         ],
         answer: "An online form"
       }
+    },
+    {
+      id: "library-study-spaces",
+      title: "More study places in the library",
+      level: "B1",
+      cefrBand: ["B1"],
+      theme: "Study",
+      sourceType: "controlled-ai-training",
+      sourceNote: "Controlled campus text for daily academic vocabulary and passive structures.",
+      recyclingDensity: "high",
+      channels: ["reading", "quiet", "public"],
+      tags: ["study", "academic", "daily"],
+      focusTerms: ["beschikbaar", "aanmelden", "afhankelijk"],
+      grammarPoints: ["passive", "omdat", "erWords"],
+      grammarSpans: [
+        {
+          id: "passive",
+          text: "Er wordt extra ruimte beschikbaar gemaakt",
+          sentence: "Er wordt extra ruimte beschikbaar gemaakt in de bibliotheek."
+        },
+        {
+          id: "omdat",
+          text: "omdat veel studenten een rustige plek zoeken",
+          sentence: "De universiteit doet dit, omdat veel studenten een rustige plek zoeken."
+        },
+        {
+          id: "erWords",
+          text: "Daarvoor moeten studenten zich online aanmelden",
+          sentence: "Daarvoor moeten studenten zich online aanmelden."
+        }
+      ],
+      text:
+        "Er wordt extra ruimte beschikbaar gemaakt in de bibliotheek. De universiteit doet dit, omdat veel studenten een rustige plek zoeken. Vanaf maandag zijn er twintig nieuwe studieplekken. Daarvoor moeten studenten zich online aanmelden. Het aantal plekken is afhankelijk van de drukte tijdens de tentamenperiode.",
+      transcript: [
+        "Er wordt extra ruimte beschikbaar gemaakt in de bibliotheek.",
+        "De universiteit doet dit, omdat veel studenten een rustige plek zoeken.",
+        "Vanaf maandag zijn er twintig nieuwe studieplekken.",
+        "Daarvoor moeten studenten zich online aanmelden.",
+        "Het aantal plekken is afhankelijk van de drukte tijdens de tentamenperiode."
+      ],
+      question: {
+        prompt: "Why does the university add study places?",
+        options: [
+          "Because many students want a quiet place",
+          "Because the library will close",
+          "Because students must buy new books"
+        ],
+        answer: "Because many students want a quiet place"
+      }
+    },
+    {
+      id: "course-registration",
+      title: "Registering for a short course",
+      level: "A2+-B1",
+      cefrBand: ["A2+", "B1"],
+      theme: "Study",
+      sourceType: "controlled-ai-training",
+      sourceNote: "Controlled practical text for registration language and te-infinitive practice.",
+      recyclingDensity: "medium",
+      channels: ["reading", "quiet"],
+      tags: ["study", "daily", "separable"],
+      focusTerms: ["aanmelden", "beschikbaar", "besluiten"],
+      grammarPoints: ["separable", "teInfinitive", "omdat"],
+      grammarSpans: [
+        {
+          id: "separable",
+          text: "Studenten melden zich online aan",
+          sentence: "Studenten melden zich online aan voor de korte cursus."
+        },
+        {
+          id: "teInfinitive",
+          text: "om de groep klein te houden",
+          sentence: "De docent besluit om de groep klein te houden."
+        },
+        {
+          id: "omdat",
+          text: "omdat er weinig plekken beschikbaar zijn",
+          sentence: "Aanmelden is belangrijk, omdat er weinig plekken beschikbaar zijn."
+        }
+      ],
+      text:
+        "Studenten melden zich online aan voor de korte cursus. De docent besluit om de groep klein te houden. Aanmelden is belangrijk, omdat er weinig plekken beschikbaar zijn. Wie zich later aanmeldt, komt op een wachtlijst. De cursus begint volgende week en duurt drie middagen.",
+      transcript: [
+        "Studenten melden zich online aan voor de korte cursus.",
+        "De docent besluit om de groep klein te houden.",
+        "Aanmelden is belangrijk, omdat er weinig plekken beschikbaar zijn.",
+        "Wie zich later aanmeldt, komt op een wachtlijst.",
+        "De cursus begint volgende week en duurt drie middagen."
+      ],
+      question: {
+        prompt: "Why should students register early?",
+        options: [
+          "Because there are few places available",
+          "Because the course is online only",
+          "Because the teacher is absent"
+        ],
+        answer: "Because there are few places available"
+      }
+    },
+    {
+      id: "neighborhood-park-meeting",
+      title: "A meeting about the neighborhood park",
+      level: "B1",
+      cefrBand: ["B1"],
+      theme: "City life",
+      sourceType: "controlled-ai-training",
+      sourceNote: "Controlled civic text for meeting vocabulary and contrast clauses.",
+      recyclingDensity: "high",
+      channels: ["reading", "quiet", "public"],
+      tags: ["city", "policy", "meeting"],
+      focusTerms: ["bijeenkomst", "inwoners", "maatregelen"],
+      grammarPoints: ["hoewel", "teInfinitive", "erWords"],
+      grammarSpans: [
+        {
+          id: "hoewel",
+          text: "Hoewel sommige inwoners twijfelen",
+          sentence: "Hoewel sommige inwoners twijfelen, willen veel mensen meedenken."
+        },
+        {
+          id: "teInfinitive",
+          text: "om het park veiliger te maken",
+          sentence: "De gemeente bespreekt maatregelen om het park veiliger te maken."
+        },
+        {
+          id: "erWords",
+          text: "Daarover kunnen inwoners vragen stellen",
+          sentence: "Daarover kunnen inwoners vragen stellen tijdens de bijeenkomst."
+        }
+      ],
+      text:
+        "Volgende week is er een bijeenkomst over het park in de buurt. De gemeente bespreekt maatregelen om het park veiliger te maken. Hoewel sommige inwoners twijfelen, willen veel mensen meedenken. Daarover kunnen inwoners vragen stellen tijdens de bijeenkomst. Na de zomer wordt besloten welke maatregelen nodig zijn.",
+      transcript: [
+        "Volgende week is er een bijeenkomst over het park in de buurt.",
+        "De gemeente bespreekt maatregelen om het park veiliger te maken.",
+        "Hoewel sommige inwoners twijfelen, willen veel mensen meedenken.",
+        "Daarover kunnen inwoners vragen stellen tijdens de bijeenkomst.",
+        "Na de zomer wordt besloten welke maatregelen nodig zijn."
+      ],
+      question: {
+        prompt: "What is the meeting about?",
+        options: [
+          "Measures to make the park safer",
+          "A new train connection",
+          "A change in university courses"
+        ],
+        answer: "Measures to make the park safer"
+      }
+    },
+    {
+      id: "online-application-status",
+      title: "Checking an online application",
+      level: "A2+-B1",
+      cefrBand: ["A2+", "B1"],
+      theme: "Public information",
+      sourceType: "controlled-ai-training",
+      sourceNote: "Controlled formal text for applications, expected timelines, and er-words.",
+      recyclingDensity: "medium",
+      channels: ["reading", "quiet", "writing"],
+      tags: ["formal", "policy", "daily"],
+      focusTerms: ["aanvraag", "verwacht", "regeling"],
+      grammarPoints: ["passive", "omdat", "erWords"],
+      grammarSpans: [
+        {
+          id: "passive",
+          text: "Uw aanvraag wordt nog behandeld",
+          sentence: "Uw aanvraag wordt nog behandeld door de gemeente."
+        },
+        {
+          id: "omdat",
+          text: "omdat er veel aanvragen zijn",
+          sentence: "Het antwoord duurt langer, omdat er veel aanvragen zijn."
+        },
+        {
+          id: "erWords",
+          text: "Daarvoor krijgt u een bericht",
+          sentence: "Daarvoor krijgt u een bericht in uw online account."
+        }
+      ],
+      text:
+        "Uw aanvraag wordt nog behandeld door de gemeente. Het antwoord duurt langer, omdat er veel aanvragen zijn. Volgens de regeling krijgt u binnen vier weken een reactie. Daarvoor krijgt u een bericht in uw online account. Er wordt verwacht dat de meeste aanvragen deze maand klaar zijn.",
+      transcript: [
+        "Uw aanvraag wordt nog behandeld door de gemeente.",
+        "Het antwoord duurt langer, omdat er veel aanvragen zijn.",
+        "Volgens de regeling krijgt u binnen vier weken een reactie.",
+        "Daarvoor krijgt u een bericht in uw online account.",
+        "Er wordt verwacht dat de meeste aanvragen deze maand klaar zijn."
+      ],
+      question: {
+        prompt: "Why does the answer take longer?",
+        options: [
+          "Because there are many applications",
+          "Because the online account is closed",
+          "Because the regulation is cancelled"
+        ],
+        answer: "Because there are many applications"
+      }
+    },
+    {
+      id: "research-feedback",
+      title: "Feedback on a research plan",
+      level: "B1-B2",
+      cefrBand: ["B1+", "B2-"],
+      theme: "Academic life",
+      sourceType: "controlled-ai-training",
+      sourceNote: "Controlled academic text for research vocabulary and formal feedback.",
+      recyclingDensity: "high",
+      channels: ["reading", "writing", "quiet"],
+      tags: ["academic", "formal", "progress"],
+      focusTerms: ["onderzoek", "toelichten", "verbeteren"],
+      grammarPoints: ["separable", "teInfinitive", "hoewel"],
+      grammarSpans: [
+        {
+          id: "separable",
+          text: "licht de feedback kort toe",
+          sentence: "De begeleider licht de feedback kort toe."
+        },
+        {
+          id: "teInfinitive",
+          text: "om de onderzoeksvraag te verbeteren",
+          sentence: "De student krijgt twee weken om de onderzoeksvraag te verbeteren."
+        },
+        {
+          id: "hoewel",
+          text: "Hoewel het plan al duidelijk is",
+          sentence: "Hoewel het plan al duidelijk is, mist er nog een voorbeeld."
+        }
+      ],
+      text:
+        "De begeleider licht de feedback kort toe. Het onderzoek heeft een duidelijke richting, maar de vraag is nog te breed. De student krijgt twee weken om de onderzoeksvraag te verbeteren. Hoewel het plan al duidelijk is, mist er nog een voorbeeld. Tijdens de volgende bijeenkomst wordt de nieuwe versie besproken.",
+      transcript: [
+        "De begeleider licht de feedback kort toe.",
+        "Het onderzoek heeft een duidelijke richting, maar de vraag is nog te breed.",
+        "De student krijgt twee weken om de onderzoeksvraag te verbeteren.",
+        "Hoewel het plan al duidelijk is, mist er nog een voorbeeld.",
+        "Tijdens de volgende bijeenkomst wordt de nieuwe versie besproken."
+      ],
+      question: {
+        prompt: "What should the student improve?",
+        options: [
+          "The research question",
+          "The meeting room",
+          "The online application"
+        ],
+        answer: "The research question"
+      }
+    },
+    {
+      id: "bus-route-change",
+      title: "A temporary bus route change",
+      level: "A2+-B1",
+      cefrBand: ["A2+", "B1"],
+      theme: "Transport",
+      sourceType: "controlled-ai-training",
+      sourceNote: "Controlled transport text for delay vocabulary and cause-result connectors.",
+      recyclingDensity: "medium",
+      channels: ["reading", "public"],
+      tags: ["transport", "daily", "connector"],
+      focusTerms: ["vertraging", "onderweg", "daardoor"],
+      grammarPoints: ["omdat", "passive", "hoewel"],
+      grammarSpans: [
+        {
+          id: "omdat",
+          text: "omdat er aan de weg wordt gewerkt",
+          sentence: "De bus rijdt een andere route, omdat er aan de weg wordt gewerkt."
+        },
+        {
+          id: "passive",
+          text: "er aan de weg wordt gewerkt",
+          sentence: "De bus rijdt een andere route, omdat er aan de weg wordt gewerkt."
+        },
+        {
+          id: "hoewel",
+          text: "Hoewel de route langer is",
+          sentence: "Hoewel de route langer is, blijft de bus elk kwartier rijden."
+        }
+      ],
+      text:
+        "De bus rijdt een andere route, omdat er aan de weg wordt gewerkt. Reizigers zijn daardoor soms tien minuten langer onderweg. Op de borden bij de halte staat waar de tijdelijke halte is. Hoewel de route langer is, blijft de bus elk kwartier rijden. De vervoerder verwacht weinig vertraging buiten de spits.",
+      transcript: [
+        "De bus rijdt een andere route, omdat er aan de weg wordt gewerkt.",
+        "Reizigers zijn daardoor soms tien minuten langer onderweg.",
+        "Op de borden bij de halte staat waar de tijdelijke halte is.",
+        "Hoewel de route langer is, blijft de bus elk kwartier rijden.",
+        "De vervoerder verwacht weinig vertraging buiten de spits."
+      ],
+      question: {
+        prompt: "Why does the bus take another route?",
+        options: [
+          "Because road work is taking place",
+          "Because the bus is cancelled",
+          "Because tickets are cheaper"
+        ],
+        answer: "Because road work is taking place"
+      }
     }
   ],
   writingPrompts: [
@@ -874,6 +1168,246 @@ window.NEDERFLOW_CONTENT = {
         "Write a short Dutch email to a supervisor. Explain that you will attend a research meeting and ask whether you should prepare anything.",
       sample:
         "Beste ..., morgen woon ik de bijeenkomst over het onderzoek bij. Kunt u laten weten of ik daarvoor iets moet voorbereiden? Alvast bedankt."
+    },
+    {
+      id: "study-place-request",
+      title: "Message: ask about a study place",
+      level: "A2-B1",
+      prompt:
+        "Write a short Dutch message to the library. Ask whether a quiet study place is available tomorrow afternoon.",
+      sample:
+        "Beste ..., is er morgenmiddag een rustige studieplek beschikbaar in de bibliotheek? Ik hoor het graag. Alvast bedankt."
+    },
+    {
+      id: "course-registration-question",
+      title: "Email: question about registration",
+      level: "B1",
+      prompt:
+        "Write a polite Dutch email asking whether you can still register for a short course and when it starts.",
+      sample:
+        "Beste ..., ik wil mij graag aanmelden voor de korte cursus. Is er nog een plek beschikbaar en wanneer begint de cursus? Alvast bedankt voor uw reactie."
+    },
+    {
+      id: "application-status-request",
+      title: "Formal email: application status",
+      level: "B1",
+      prompt:
+        "Write a formal Dutch email asking about the status of an application. Mention that you submitted it two weeks ago.",
+      sample:
+        "Geachte heer/mevrouw, twee weken geleden heb ik mijn aanvraag ingediend. Kunt u mij laten weten wat de status is? Alvast bedankt voor uw hulp."
+    },
+    {
+      id: "meeting-cannot-attend",
+      title: "Message: cannot attend a meeting",
+      level: "B1",
+      prompt:
+        "Write a Dutch message saying that you cannot attend a meeting and ask whether the main points can be shared later.",
+      sample:
+        "Beste ..., helaas kan ik niet bij de bijeenkomst aanwezig zijn. Zou u de belangrijkste punten later met mij kunnen delen? Alvast bedankt."
+    },
+    {
+      id: "research-feedback-reply",
+      title: "Email: reply to research feedback",
+      level: "B1-B2",
+      prompt:
+        "Write a short Dutch email thanking a supervisor for feedback and saying what you will improve in your research plan.",
+      sample:
+        "Beste ..., bedankt voor uw feedback. Ik zal de onderzoeksvraag duidelijker maken en een extra voorbeeld toevoegen. Tijdens de volgende bijeenkomst kan ik de nieuwe versie toelichten."
     }
   ]
 };
+
+(function expandNederFlowCorpus() {
+  const content = window.NEDERFLOW_CONTENT;
+  const generatedLexicon = {
+    aanpak: ["approach", "Used for a plan or way of dealing with a problem.", "De aanpak wordt stap voor stap verbeterd."],
+    aandacht: ["attention", "Often used with krijgen or besteden aan.", "Het onderwerp krijgt meer aandacht."],
+    advies: ["advice", "Common in study, work, and public-service contexts.", "De commissie geeft advies over het plan."],
+    afspraak: ["appointment, agreement", "Pattern: een afspraak maken or verzetten.", "Ik wil graag een afspraak verzetten."],
+    bereikbaarheid: ["accessibility, reachability", "Used for transport, services, and institutions.", "De bereikbaarheid van de campus wordt beter."],
+    betrokkenen: ["people involved, stakeholders", "Formal plural noun for people affected by a plan.", "Betrokkenen kunnen reageren op het voorstel."],
+    duidelijkheid: ["clarity", "Useful in formal emails and policy texts.", "Studenten vragen om meer duidelijkheid."],
+    ervaring: ["experience", "Used for personal or user experience.", "De ervaring van gebruikers staat centraal."],
+    haalbaar: ["feasible", "Common with zijn and blijven.", "Het voorstel is haalbaar binnen het budget."],
+    inrichting: ["layout, arrangement, design", "Used for spaces, systems, and procedures.", "De inrichting van de ruimte verandert."],
+    kosten: ["costs", "Plural noun often used with stijgen or dalen.", "De kosten blijven voorlopig beperkt."],
+    maatregel: ["measure", "Singular of maatregelen.", "Deze maatregel geldt vanaf maandag."],
+    mogelijkheid: ["possibility, option", "Formal alternative to kans or optie.", "Er is een mogelijkheid om later te reageren."],
+    onderzoeksvraag: ["research question", "Academic term for the central question of a study.", "De onderzoeksvraag moet duidelijker worden."],
+    overleg: ["consultation, discussion", "Often used with hebben or voeren.", "Er is overleg nodig met studenten."],
+    planning: ["planning, schedule", "Used for deadlines and organization.", "De planning wordt volgende week aangepast."],
+    prioriteit: ["priority", "Often used with krijgen or hebben.", "Veiligheid krijgt prioriteit."],
+    proefproject: ["pilot project", "Small trial before a larger change.", "Het proefproject duurt drie maanden."],
+    reactie: ["response, reaction", "Useful in emails and public consultation.", "Bewoners kunnen een reactie sturen."],
+    rekening: ["consideration, account", "Fixed pattern: rekening houden met.", "De organisatie houdt rekening met drukte."],
+    reserveren: ["to reserve, book", "Used for rooms, seats, and appointments.", "Studenten kunnen online een plek reserveren."],
+    samenwerking: ["cooperation, collaboration", "Formal word for working together.", "De samenwerking tussen teams wordt sterker."],
+    schema: ["schedule", "Used for timetables and study plans.", "Het nieuwe schema staat online."],
+    tekort: ["shortage", "Common in news and policy texts.", "Er is een tekort aan rustige werkplekken."],
+    toegankelijk: ["accessible, approachable", "Used for services, language, and spaces.", "De informatie moet toegankelijk blijven."],
+    toelichting: ["explanation, clarification", "Formal noun from toelichten.", "Er komt een korte toelichting bij het formulier."],
+    uitvoering: ["implementation, execution", "Used when a plan becomes practical action.", "De uitvoering begint na de zomer."],
+    verbetering: ["improvement", "Noun from verbeteren.", "De verbetering is vooral zichtbaar in de ochtend."],
+    vertraging: ["delay", "Common with hebben or oplopen.", "De aanvraag heeft vertraging opgelopen."],
+    voorwaarde: ["condition, requirement", "Formal word for a requirement.", "Een geldige inschrijving is een voorwaarde."],
+    voorstel: ["proposal", "Used in meetings, policy, and emails.", "Het voorstel wordt volgende week besproken."],
+    wachttijd: ["waiting time", "Used in healthcare and services.", "De wachttijd is langer dan verwacht."],
+    werkwijze: ["working method, procedure", "Formal word for how something is done.", "De werkwijze wordt aangepast."],
+    wijziging: ["change, modification", "Common in public notices.", "De wijziging geldt vanaf volgende maand."]
+  };
+
+  Object.entries(generatedLexicon).forEach(([term, [translation, usage, example]]) => {
+    content.lexicon[term] ||= {
+      translation,
+      usage,
+      examples: [example],
+      tags: ["b1-b2", "generated-corpus"]
+    };
+  });
+
+  const topics = [
+    ["campus-library", "Study", "study places during exam weeks", "de universiteit", "studenten", "een tekort aan rustige werkplekken", "rustige studieplekken beter te verdelen", "studenten beter kunnen plannen", ["beschikbaar", "reserveren", "tekort"]],
+    ["course-planning", "Study", "changes in course planning", "de opleiding", "studenten", "onduidelijkheid over deadlines", "het schema duidelijker te maken", "studenten minder stress ervaren", ["planning", "schema", "duidelijkheid"]],
+    ["digital-service", "Public information", "a new digital service", "de gemeente", "inwoners", "lange wachttijden bij de balie", "de online aanvraag eenvoudiger te maken", "inwoners sneller antwoord krijgen", ["aanvraag", "wachttijd", "toegankelijk"]],
+    ["public-transport", "Transport", "reliable public transport", "de vervoerder", "reizigers", "vertraging in de spits", "de bereikbaarheid te verbeteren", "reizigers minder tijd verliezen", ["vertraging", "bereikbaarheid", "maatregel"]],
+    ["bike-safety", "City life", "safer cycling routes", "de gemeente", "fietsers", "drukte op smalle fietspaden", "de inrichting veiliger te maken", "fietsers rustiger kunnen reizen", ["maatregel", "inrichting", "prioriteit"]],
+    ["housing-support", "Daily life", "support with housing questions", "het loket wonen", "bewoners", "veel vragen over regels", "de informatie toegankelijker te maken", "bewoners betere keuzes maken", ["regeling", "toelichting", "voorwaarde"]],
+    ["health-appointment", "Healthcare", "appointments at a clinic", "de kliniek", "patienten", "een lange wachttijd voor afspraken", "de planning aan te passen", "patienten sneller geholpen worden", ["afspraak", "wachttijd", "beschikbaar"]],
+    ["work-meeting", "Work", "clearer workplace meetings", "het team", "medewerkers", "te veel losse afspraken", "de werkwijze duidelijker te maken", "medewerkers effectiever samenwerken", ["overleg", "werkwijze", "samenwerking"]],
+    ["research-design", "Academic life", "improving a research design", "de onderzoeksgroep", "studenten", "een te brede onderzoeksvraag", "het onderzoeksplan te verbeteren", "het onderzoek haalbaar blijft", ["onderzoek", "onderzoeksvraag", "haalbaar"]],
+    ["community-feedback", "City life", "feedback from residents", "de wijkraad", "inwoners", "weinig duidelijkheid over plannen", "reacties systematisch te verzamelen", "betrokkenen zich gehoord voelen", ["reactie", "betrokkenen", "voorstel"]],
+    ["language-course", "Study", "a practical language course", "het taalinstituut", "cursisten", "verschil in taalniveau", "de oefeningen beter af te stemmen", "cursisten actiever oefenen", ["aanpak", "verbetering", "ervaring"]],
+    ["sustainability-plan", "Society", "a sustainability plan", "de organisatie", "gebruikers", "hoge kosten en weinig overzicht", "de uitvoering realistischer te maken", "de kosten beperkt blijven", ["kosten", "uitvoering", "haalbaar"]],
+    ["museum-program", "Culture", "a new museum program", "het museum", "bezoekers", "moeilijke informatie bij tentoonstellingen", "de uitleg toegankelijker te maken", "bezoekers meer begrijpen", ["toegankelijk", "toelichting", "ervaring"]],
+    ["student-wellbeing", "Study", "student wellbeing support", "de hogeschool", "studenten", "toenemende stress tijdens drukke weken", "advies makkelijker beschikbaar te maken", "studenten eerder hulp vragen", ["advies", "aandacht", "mogelijkheid"]],
+    ["neighborhood-noise", "Daily life", "noise in the neighborhood", "de gemeente", "bewoners", "klachten over avondlawaai", "een tijdelijke maatregel in te voeren", "bewoners rustiger kunnen slapen", ["maatregel", "reactie", "voorstel"]],
+    ["online-feedback", "Work", "feedback on online cooperation", "het projectteam", "collega's", "onduidelijke digitale afspraken", "de samenwerking online te verbeteren", "iedereen dezelfde informatie heeft", ["samenwerking", "duidelijkheid", "werkwijze"]],
+    ["internship-plan", "Study", "preparing for an internship", "de opleiding", "studenten", "vragen over verwachtingen", "de voorwaarden beter uit te leggen", "studenten goed voorbereid starten", ["voorwaarde", "advies", "planning"]],
+    ["local-library", "City life", "library services for residents", "de bibliotheek", "inwoners", "beperkte openingstijden", "het aanbod beter te spreiden", "meer mensen gebruik kunnen maken van de dienst", ["beschikbaar", "toegankelijk", "voorstel"]],
+    ["data-meeting", "Academic life", "a meeting about research data", "de onderzoeker", "studenten", "vragen over dataverzameling", "de methode duidelijk toe te lichten", "studenten het onderzoek beter begrijpen", ["bijeenkomst", "toelichting", "onderzoek"]],
+    ["form-change", "Public information", "a changed online form", "de gemeente", "aanvragers", "fouten in ingevulde formulieren", "het formulier eenvoudiger te maken", "aanvragen sneller behandeld worden", ["aanvraag", "wijziging", "toegankelijk"]]
+  ];
+
+  const angles = [
+    ["budget", "budget and feasibility", "het budget beperkt is", "de oplossing niet duur mag worden"],
+    ["planning", "planning and deadlines", "de planning strak is", "niet iedereen tegelijk kan beginnen"],
+    ["communication", "clear communication", "veel mensen extra uitleg nodig hebben", "de eerste informatie al online staat"],
+    ["accessibility", "accessibility", "niet iedereen dezelfde mogelijkheden heeft", "de basis al redelijk toegankelijk is"],
+    ["participation", "participation", "betrokkenen hun mening willen geven", "niet elke reactie direct kan worden verwerkt"],
+    ["evidence", "evidence and research", "er eerst meer gegevens nodig zijn", "de richting van het plan al duidelijk is"],
+    ["pressure", "busy periods", "de drukte tijdelijk toeneemt", "de meeste gebruikers begrip tonen"],
+    ["quality", "quality improvement", "de kwaliteit nog niet overal gelijk is", "de vorige aanpak redelijk werkte"],
+    ["digital", "digital tools", "veel stappen online gebeuren", "sommige mensen liever persoonlijk contact hebben"],
+    ["evaluation", "evaluation after a pilot", "de resultaten nog worden onderzocht", "het proefproject positieve reacties krijgt"]
+  ];
+
+  const generatedMaterials = [];
+  topics.forEach(([topicId, theme, subject, actor, group, issue, plan, result, terms], topicIndex) => {
+    angles.forEach(([angleId, angleTitle, cause, contrast], angleIndex) => {
+      const number = topicIndex * angles.length + angleIndex + 1;
+      const title = `${capitalizeWords(subject)}: ${capitalizeWords(angleTitle)}`;
+      const passiveText = `wordt er gewerkt aan ${plan}`;
+      const omdatText = `omdat ${cause}`;
+      const hoewelText = `Hoewel ${contrast}`;
+      const erText = "Daarvoor is regelmatig overleg nodig";
+      const teText = `om ${result}`;
+      const sentence1 = `Volgens een recente update van ${actor} ${passiveText}.`;
+      const sentence2 = `Veel ${group} merken dat ${issue} steeds belangrijker wordt, ${omdatText}.`;
+      const sentence3 = `${hoewelText}, wil ${actor} de aanpak stap voor stap verbeteren.`;
+      const sentence4 = `${erText} tussen ${actor} en ${group}.`;
+      const sentence5 = `De discussie gaat vooral over ${angleTitle}, maar ook over praktische uitvoering.`;
+      const sentence6 = `Het doel is ${teText}, zonder dat de kosten te snel stijgen.`;
+      const sentence7 = `Na enkele weken wordt bekeken welke maatregel haalbaar blijft.`;
+      const text = [sentence1, sentence2, sentence3, sentence4, sentence5, sentence6, sentence7].join(" ");
+      generatedMaterials.push({
+        id: `b1b2-${topicId}-${angleId}`,
+        title,
+        level: number % 4 === 0 ? "B1+-B2" : "B1-B2",
+        cefrBand: number % 4 === 0 ? ["B1+", "B2"] : ["B1", "B2-"],
+        theme,
+        sourceType: "controlled-ai-training",
+        sourceNote: "Generated controlled B1-B2 reading material for vocabulary recycling and grammar-on-demand.",
+        recyclingDensity: number % 3 === 0 ? "high" : "medium",
+        channels: ["reading", "quiet", "writing"],
+        tags: [theme.toLowerCase().replaceAll(" ", "-"), angleId, "b1-b2"],
+        focusTerms: terms,
+        grammarPoints: ["passive", "omdat", "hoewel", "erWords", "teInfinitive"],
+        grammarSpans: [
+          { id: "passive", text: passiveText, sentence: sentence1 },
+          { id: "omdat", text: omdatText, sentence: sentence2 },
+          { id: "hoewel", text: hoewelText, sentence: sentence3 },
+          { id: "erWords", text: erText, sentence: sentence4 },
+          { id: "teInfinitive", text: teText, sentence: sentence6 }
+        ],
+        text,
+        transcript: [sentence1, sentence2, sentence3, sentence4, sentence5, sentence6, sentence7],
+        question: {
+          prompt: "What is the main purpose of the plan?",
+          options: [
+            `To improve the situation for ${group}`,
+            "To cancel the existing service immediately",
+            "To make the topic less accessible"
+          ],
+          answer: `To improve the situation for ${group}`
+        }
+      });
+    });
+  });
+
+  const generatedWritingPrompts = [];
+  const writingContexts = [
+    ["study-space", "library study space", "the library", "ask whether a quiet place is available and explain why you need it"],
+    ["course-info", "course information", "a course coordinator", "ask for more information about planning, level, and registration"],
+    ["application-delay", "application delay", "the municipality", "ask politely about the status of an application"],
+    ["meeting-summary", "meeting summary", "a colleague", "summarize the main point of a meeting and ask one follow-up question"],
+    ["research-plan", "research plan", "a supervisor", "explain what you improved in your research question"],
+    ["appointment-change", "appointment change", "a clinic", "ask to reschedule an appointment and propose two possible times"],
+    ["feedback-request", "feedback request", "a teacher", "ask for feedback on a short text and explain what you are unsure about"],
+    ["public-plan-opinion", "opinion about a public plan", "a local consultation page", "give your opinion and mention one advantage and one concern"],
+    ["transport-problem", "transport problem", "customer service", "describe a delay and ask what solution is possible"],
+    ["internship-question", "internship question", "an internship coordinator", "ask about requirements and preparation"]
+  ];
+  const writingModes = [
+    ["short-email", "short formal email", "Write 5-6 polite Dutch sentences."],
+    ["follow-up", "follow-up message", "Write a clear follow-up after an earlier contact."],
+    ["opinion", "short opinion", "Write 6-8 Dutch sentences with omdat and hoewel."],
+    ["request", "polite request", "Write a request using zou kunnen and alvast bedankt."],
+    ["summary", "brief summary", "Write a short summary plus one question."]
+  ];
+
+  writingContexts.forEach(([contextId, topic, recipient, goal], contextIndex) => {
+    writingModes.forEach(([modeId, modeTitle, instruction], modeIndex) => {
+      const count = contextIndex * writingModes.length + modeIndex + 1;
+      generatedWritingPrompts.push({
+        id: `b1b2-writing-${contextId}-${modeId}`,
+        title: `${capitalizeWords(topic)}: ${capitalizeWords(modeTitle)}`,
+        level: count % 4 === 0 ? "B1+-B2" : "B1-B2",
+        prompt: `${instruction} Write to ${recipient}. Your goal: ${goal}. Include at least one connector such as omdat, hoewel, daardoor, or daarvoor.`,
+        sample:
+          `Beste ..., bedankt voor uw bericht. Ik schrijf u omdat ik meer duidelijkheid nodig heb over ${topic}. Hoewel de informatie al nuttig is, heb ik nog een vraag over de planning. Kunt u dit kort toelichten? Alvast bedankt voor uw reactie.`
+      });
+    });
+  });
+
+  const writingRounds = ["planning", "clarity", "feedback", "next step", "practical problem"];
+  writingRounds.forEach((round, roundIndex) => {
+    writingContexts.forEach(([contextId, topic, recipient, goal], contextIndex) => {
+      const count = roundIndex * writingContexts.length + contextIndex + 51;
+      generatedWritingPrompts.push({
+        id: `b1b2-writing-${contextId}-${round.replaceAll(" ", "-")}`,
+        title: `${capitalizeWords(topic)}: ${capitalizeWords(round)}`,
+        level: count % 5 === 0 ? "B1+-B2" : "B1-B2",
+        prompt: `Write a B1-B2 Dutch text to ${recipient}. Focus on ${round}. Explain the situation, give one reason, and ask for a clear next step. Topic: ${goal}.`,
+        sample:
+          `Beste ..., ik neem contact met u op over ${topic}. De situatie is voor mij belangrijk, omdat ik mijn planning goed wil organiseren. Daarom hoor ik graag wat de volgende stap is. Bij voorbaat dank voor uw hulp.`
+      });
+    });
+  });
+
+  content.materials.push(...generatedMaterials);
+  content.writingPrompts.push(...generatedWritingPrompts);
+
+  function capitalizeWords(value) {
+    return value.replace(/\b[a-z]/g, (match) => match.toUpperCase());
+  }
+})();

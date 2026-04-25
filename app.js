@@ -1,6 +1,6 @@
 ﻿const STORAGE_KEY = "nederflow.v01";
 
-const APP_VERSION = "v0.6.3";
+const APP_VERSION = "v0.8.0";
 const levelOrder = ["A1", "A2", "A2+", "B1-", "B1", "B1+", "B2-", "B2", "B2+", "C1"];
 const skillNames = ["listening", "reading", "grammar", "writing"];
 
@@ -560,6 +560,8 @@ function defaultState() {
       context: "public",
       activeWord: null,
       activeGrammar: "omdat",
+      selectedMaterialId: null,
+      selectedWritingPromptId: null,
       grammarSource: null,
       shadowingLevel: "auto",
       shadowingRate: "normal",
@@ -685,8 +687,15 @@ function getMaterial(id) {
 }
 
 function currentMaterial() {
+  if (state.ui.selectedMaterialId) return getMaterial(state.ui.selectedMaterialId);
   if (state.currentSession?.materialId) return getMaterial(state.currentSession.materialId);
   return selectMaterial();
+}
+
+function currentWritingPrompt() {
+  const selected = writingPrompts.find((prompt) => prompt.id === state.ui.selectedWritingPromptId);
+  if (selected) return selected;
+  return writingPrompts[Math.min(writingPrompts.length - 1, Math.floor((state.profile.difficulty.writing || 2) / 3))];
 }
 
 function dueVocab() {
@@ -1381,6 +1390,45 @@ function renderMaterialSummary(material) {
   `;
 }
 
+function renderMaterialPicker(activeId) {
+  const active = getMaterial(activeId);
+  return `
+    <section class="panel" style="margin-bottom:16px">
+      <div class="page-head" style="margin-bottom:10px">
+        <div>
+          <h2>Reading library</h2>
+          <p class="hint">${materials.length} controlled materials, mostly B1-B2. Choose one, or let NederFlow recommend the next one through sessions.</p>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="materialSelect">Choose reading material</label>
+        <select id="materialSelect" data-select-material>
+          ${materials.map((material) => `
+            <option value="${escapeHtml(material.id)}" ${activeId === material.id ? "selected" : ""}>
+              ${escapeHtml(material.level)} - ${escapeHtml(material.theme)} - ${escapeHtml(material.title)}
+            </option>
+          `).join("")}
+        </select>
+      </div>
+      <div class="feedback" style="margin-top:10px">
+        <strong>${escapeHtml(active.title)}</strong>
+        <p class="hint">${escapeHtml(active.level)} · ${escapeHtml(active.theme)} · ${(active.focusTerms || []).slice(0, 3).map(escapeHtml).join(", ")}</p>
+      </div>
+      <details style="margin-top:10px">
+        <summary>Browse as cards</summary>
+        <div class="choice-grid" style="margin-top:10px">
+        ${materials.map((material) => `
+          <button class="choice ${activeId === material.id ? "selected" : ""}" data-action="select-material" data-material-id="${material.id}">
+            <strong>${escapeHtml(material.title)}</strong>
+            <span>${escapeHtml(material.level)} · ${escapeHtml(material.theme)} · ${(material.focusTerms || []).slice(0, 3).map(escapeHtml).join(", ")}</span>
+          </button>
+        `).join("")}
+        </div>
+      </details>
+    </section>
+  `;
+}
+
 function renderListeningLog(limit = 5) {
   const entries = state.listeningLog.slice(0, limit);
   if (!entries.length) {
@@ -1789,7 +1837,7 @@ function escapeRegExp(value) {
 }
 
 function renderWritingBlock() {
-  const prompt = writingPrompts[Math.min(writingPrompts.length - 1, Math.floor((state.profile.difficulty.writing || 2) / 3))];
+  const prompt = currentWritingPrompt();
   return `
     <div class="feedback">
       <h3>${escapeHtml(prompt.title)}</h3>
@@ -1947,6 +1995,7 @@ function renderReading() {
         <p class="lead">Click words to save them. Click highlighted grammar structures when the sentence itself becomes the problem.</p>
       </div>
     </section>
+    ${renderMaterialPicker(material.id)}
     <section class="panel">
       ${renderReadingBlock(material)}
     </section>
@@ -2109,7 +2158,7 @@ function renderGrammarOutputFeedback(id) {
 }
 
 function renderWriting() {
-  const prompt = writingPrompts[Math.min(writingPrompts.length - 1, Math.floor((state.profile.difficulty.writing || 2) / 3))];
+  const prompt = currentWritingPrompt();
   return `
     <section class="page-head">
       <div>
@@ -2117,6 +2166,32 @@ function renderWriting() {
         <h1>Practical output</h1>
         <p class="lead">Start with useful emails and daily messages, then upgrade toward opinion and academic language.</p>
       </div>
+    </section>
+
+    <section class="panel" style="margin-bottom:16px">
+      <h2>Writing library</h2>
+      <p class="hint">${writingPrompts.length} prompts, mostly B1-B2 formal email, opinion, summary, and request tasks.</p>
+      <div class="form-field" style="margin-top:10px">
+        <label for="writingPromptSelect">Choose writing prompt</label>
+        <select id="writingPromptSelect" data-select-writing-prompt>
+          ${writingPrompts.map((item) => `
+            <option value="${escapeHtml(item.id)}" ${prompt.id === item.id ? "selected" : ""}>
+              ${escapeHtml(item.level)} - ${escapeHtml(item.title)}
+            </option>
+          `).join("")}
+        </select>
+      </div>
+      <details style="margin-top:10px">
+        <summary>Browse as cards</summary>
+        <div class="choice-grid" style="margin-top:10px">
+          ${writingPrompts.map((item) => `
+            <button class="choice ${prompt.id === item.id ? "selected" : ""}" data-action="select-writing-prompt" data-prompt-id="${item.id}">
+              <strong>${escapeHtml(item.title)}</strong>
+              <span>${escapeHtml(item.level)}</span>
+            </button>
+          `).join("")}
+        </div>
+      </details>
     </section>
 
     <section class="grid two">
@@ -2283,6 +2358,17 @@ document.addEventListener("click", (event) => {
   }
   if (action === "select-context") {
     state.ui.context = target.dataset.context;
+    saveState();
+    render();
+  }
+  if (action === "select-material") {
+    state.ui.selectedMaterialId = target.dataset.materialId;
+    saveState();
+    render();
+  }
+  if (action === "select-writing-prompt") {
+    state.ui.selectedWritingPromptId = target.dataset.promptId;
+    state.ui.writingFeedback = null;
     saveState();
     render();
   }
@@ -2507,6 +2593,19 @@ document.addEventListener("submit", (event) => {
 
 document.addEventListener("change", (event) => {
   const input = event.target;
+  if (input.matches?.("[data-select-material]")) {
+    state.ui.selectedMaterialId = input.value;
+    saveState();
+    render();
+    return;
+  }
+  if (input.matches?.("[data-select-writing-prompt]")) {
+    state.ui.selectedWritingPromptId = input.value;
+    state.ui.writingFeedback = null;
+    saveState();
+    render();
+    return;
+  }
   if (!input.matches?.("[data-upload-type]")) return;
   const file = input.files?.[0];
   saveUploadedRecording(input.dataset.uploadType, input.dataset.recordingId, file);
