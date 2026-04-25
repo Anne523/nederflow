@@ -1,6 +1,6 @@
 ﻿const STORAGE_KEY = "nederflow.v01";
 
-const APP_VERSION = "v0.5.4";
+const APP_VERSION = "v0.5.5";
 const levelOrder = ["A1", "A2", "A2+", "B1-", "B1", "B1+", "B2-", "B2", "B2+", "C1"];
 const skillNames = ["listening", "reading", "grammar", "writing", "speaking"];
 
@@ -1479,6 +1479,7 @@ function renderListeningBlock(material) {
         <div class="actions">
           <button class="btn primary" data-action="speak-material" data-material-id="${material.id}">Play full audio</button>
           <button class="btn secondary" data-action="speak-material-slow" data-material-id="${material.id}">Play slower</button>
+          <button class="btn secondary" data-action="stop-source-audio">Stop audio</button>
         </div>
         <p class="hint" style="margin-top:10px">Use the transcript only after your first listening pass.</p>
       </div>
@@ -1801,6 +1802,7 @@ function renderReading() {
       </div>
       <div class="actions">
         <button class="btn secondary" data-action="speak-material" data-material-id="${material.id}">Play article</button>
+        <button class="btn secondary" data-action="stop-source-audio">Stop audio</button>
       </div>
     </section>
     <section class="panel">

@@ -1,11 +1,11 @@
-const CACHE_NAME = "nederflow-v054";
+﻿const CACHE_NAME = "nederflow-v055";
 const CORE_ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=0.5.4",
-  "./content.js?v=0.5.4",
-  "./app.js?v=0.5.4",
-  "./manifest.webmanifest?v=0.5.4",
+  "./styles.css?v=0.5.5",
+  "./content.js?v=0.5.5",
+  "./app.js?v=0.5.5",
+  "./manifest.webmanifest?v=0.5.5",
   "./assets/icon.svg",
   "./assets/icon-192.png",
   "./assets/icon-512.png"
@@ -58,3 +58,4 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
