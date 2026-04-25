@@ -1,8 +1,8 @@
 ﻿const STORAGE_KEY = "nederflow.v01";
 
-const APP_VERSION = "v0.6.2";
+const APP_VERSION = "v0.6.3";
 const levelOrder = ["A1", "A2", "A2+", "B1-", "B1", "B1+", "B2-", "B2", "B2+", "C1"];
-const skillNames = ["listening", "reading", "grammar", "writing", "speaking"];
+const skillNames = ["listening", "reading", "grammar", "writing"];
 
 const lexicon = {
   maatregelen: {
@@ -942,49 +942,17 @@ function getExternalListeningResources(material) {
 function renderExternalListening(material, compact = false) {
   const resources = getExternalListeningResources(material);
   if (!resources.length) return "";
-  const latest = state.listeningLog.find((item) => item.materialId === material.id);
   return `
-    <div class="feedback ${compact ? "" : "good"}" style="margin-top:${compact ? "10px" : "14px"}">
-      <h3>External Dutch listening</h3>
-      <p class="hint">Open one real Dutch source, listen briefly, then come back here for vocabulary, grammar, and output practice.</p>
+    <details class="feedback ${compact ? "" : "good"}" style="margin-top:${compact ? "10px" : "14px"}">
+      <summary>Optional extensive listening</summary>
+      <p class="hint" style="margin-top:10px">Open one real Dutch source for 5-10 minutes. Treat it as relaxed exposure: no notes, no summary, no pressure to understand everything.</p>
       <div class="actions" style="margin-top:10px">
         ${resources.map((resource) => `
           <a class="btn secondary" href="${escapeHtml(resource.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(resource.label)}</a>
         `).join("")}
       </div>
       ${resources.map((resource) => `<p class="hint" style="margin-top:8px">${escapeHtml(resource.note)}</p>`).join("")}
-      <form id="externalListening-${escapeHtml(material.id)}" class="external-listening-form" style="margin-top:12px">
-        <input type="hidden" name="materialId" value="${escapeHtml(material.id)}">
-        <div class="form-field">
-          <label for="source-${escapeHtml(material.id)}">Source listened to</label>
-          <input id="source-${escapeHtml(material.id)}" type="text" name="source" placeholder="NOS video title, podcast episode, or link">
-        </div>
-        <div class="form-field">
-          <label for="comprehension-${escapeHtml(material.id)}">Comprehension</label>
-          <select id="comprehension-${escapeHtml(material.id)}" name="comprehension">
-            <option value="low">Low</option>
-            <option value="medium" selected>Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label for="words-${escapeHtml(material.id)}">New words</label>
-          <input id="words-${escapeHtml(material.id)}" type="text" name="words" placeholder="vertraging, maatregel, onderweg">
-        </div>
-        <div class="form-field">
-          <label for="patterns-${escapeHtml(material.id)}">Useful sentence patterns</label>
-          <input id="patterns-${escapeHtml(material.id)}" type="text" name="patterns" placeholder="omdat..., hoewel..., er wordt...">
-        </div>
-        <div class="form-field">
-          <label for="summary-${escapeHtml(material.id)}">One-sentence Dutch summary</label>
-          <textarea id="summary-${escapeHtml(material.id)}" name="summary" placeholder="Write one short Dutch sentence about what you heard."></textarea>
-        </div>
-        <div class="actions">
-          <button class="btn primary" type="submit">Save listening note</button>
-        </div>
-      </form>
-      ${latest ? `<p class="hint" style="margin-top:10px">Last saved: ${escapeHtml(latest.date)} · ${escapeHtml(latest.comprehension)} comprehension</p>` : ""}
-    </div>
+    </details>
   `;
 }
 
@@ -1187,7 +1155,8 @@ function taskMinutes(duration, type) {
 }
 
 function buildSession(duration, context) {
-  const material = selectMaterial({ context });
+  const mode = context === "public" ? "public" : "quiet";
+  const material = selectMaterial({ context: mode });
   const tasks = [];
   const add = (type, title, minutes) => {
     tasks.push({
@@ -1202,36 +1171,38 @@ function buildSession(duration, context) {
 
   if (duration <= 5) {
     add("review", "Recycling sprint", 5);
-  } else if (context === "public") {
-    add("listening", "Commuter listening", taskMinutes(duration, "listening"));
-    if (duration >= 15) add("reading", "News reading", taskMinutes(duration, "reading"));
+  } else if (mode === "public") {
+    add("listening", "Optional extensive listening", Math.min(10, taskMinutes(duration, "listening")));
+    add("reading", "Guided reading", taskMinutes(duration, "reading"));
     add("review", "Vocabulary recycling", taskMinutes(duration, "review"));
     if (duration >= 30) add("grammar", "Grammar-on-demand", taskMinutes(duration, "grammar"));
   } else if (context === "quiet") {
-    add("listening", "Quiet listening", taskMinutes(duration, "listening"));
-    add("reading", "News reading", taskMinutes(duration, "reading"));
+    add("reading", "Guided reading", taskMinutes(duration, "reading"));
     add("grammar", "Grammar-on-demand", taskMinutes(duration, "grammar"));
     if (duration >= 20) add("writing", "Short writing", taskMinutes(duration, "writing"));
     add("review", "Recycling review", taskMinutes(duration, "review"));
   } else {
-    add("shadowing", "Shadowing practice", taskMinutes(duration, "shadowing"));
-    add("speaking", "Speaking prompt", taskMinutes(duration, "speaking"));
-    if (duration >= 20) add("listening", "Listening warm-up", taskMinutes(duration, "listening"));
-    if (duration >= 30) add("writing", "Output transfer", taskMinutes(duration, "writing"));
+    add("reading", "Guided reading", taskMinutes(duration, "reading"));
+    add("grammar", "Grammar-on-demand", taskMinutes(duration, "grammar"));
+    if (duration >= 20) add("writing", "Short writing", taskMinutes(duration, "writing"));
     add("review", "Recycling review", taskMinutes(duration, "review"));
   }
 
-  const total = tasks.reduce((sum, task) => sum + task.minutes, 0);
+  let total = tasks.reduce((sum, task) => sum + task.minutes, 0);
   if (total > duration) {
-    const overflow = total - duration;
-    tasks[tasks.length - 1].minutes = Math.max(3, tasks[tasks.length - 1].minutes - overflow);
+    while (total > duration) {
+      const adjustable = [...tasks].reverse().find((task) => task.minutes > 3);
+      if (!adjustable) break;
+      adjustable.minutes -= 1;
+      total -= 1;
+    }
   }
 
   return {
     id: `session-${Date.now()}`,
     date: todayKey(),
     duration,
-    context,
+    context: mode,
     materialId: material.id,
     focus: getRecyclingFocus(5),
     tasks
@@ -1315,7 +1286,7 @@ function renderDashboard() {
       <div>
         <p class="eyebrow">Today</p>
         <h1>Your Dutch training flow</h1>
-        <p class="lead">Build listening strength first, recycle old words and grammar, and move output practice into moments when speaking is actually possible.</p>
+        <p class="lead">Build Dutch through level-matched reading, vocabulary recycling, grammar-on-demand, and practical writing.</p>
         <p class="hint">App version: ${APP_VERSION}</p>
       </div>
       <div class="actions">
@@ -1365,17 +1336,12 @@ function renderDashboard() {
         <div class="pill-row">
           ${focus.map((item) => `<span class="pill good">${escapeHtml(item)}</span>`).join("")}
         </div>
-        <p class="hint" style="margin-top:12px">These items are favored when the next session picks reading, listening, grammar, and output tasks.</p>
+        <p class="hint" style="margin-top:12px">These items are favored when the next session picks reading, grammar, review, and writing tasks.</p>
       </article>
       <article class="panel">
         <h2>Recommended next material</h2>
         ${renderMaterialSummary(selectMaterial())}
       </article>
-    </section>
-
-    <section class="panel" style="margin-top:16px">
-      <h2>Recent external listening</h2>
-      ${renderListeningLog(3)}
     </section>
   `;
 }
@@ -1446,7 +1412,7 @@ function renderPlacement() {
       <div>
         <p class="eyebrow">Placement</p>
         <h1>Find your starting levels</h1>
-        <p class="lead">This quick check separates listening, reading, grammar, writing, and speaking so the training plan can start unevenly on purpose.</p>
+        <p class="lead">This quick check separates listening, reading, grammar, and writing so the training plan can start unevenly on purpose.</p>
       </div>
     </section>
 
@@ -1497,16 +1463,6 @@ function renderPlacement() {
         <label for="placementWriting">5. Short writing sample</label>
         <textarea id="placementWriting" name="writing" placeholder="Write 2-3 Dutch sentences introducing your current Dutch learning goal." required></textarea>
       </div>
-
-      <div class="form-field">
-        <div class="question-title">6. Speaking confidence right now</div>
-        <div class="radio-stack">
-          <label><input type="radio" name="speaking" value="A2" required> I can handle simple daily situations slowly.</label>
-          <label><input type="radio" name="speaking" value="A2+"> I can answer basic questions but need time.</label>
-          <label><input type="radio" name="speaking" value="B1-"> I can describe plans and opinions with mistakes.</label>
-        </div>
-      </div>
-
       <div class="actions">
         <button class="btn primary" type="submit">Save placement profile</button>
         <button class="btn" type="button" data-action="go-dashboard">Cancel</button>
@@ -1517,7 +1473,7 @@ function renderPlacement() {
 
 function renderSetup() {
   const duration = state.ui.duration;
-  const context = state.ui.context;
+  const context = state.ui.context === "speaking" ? "quiet" : state.ui.context;
   const preview = buildSession(duration, context);
   return `
     <section class="page-head">
@@ -1545,9 +1501,8 @@ function renderSetup() {
         <h2>Current context</h2>
         <div class="choice-grid">
           ${[
-            ["public", "Public transport", "Listening, reading, review. No speaking."],
-            ["quiet", "Quiet mode", "No speaking, but typing is fine."],
-            ["speaking", "Speaking allowed", "Shadowing and AI-style dialogue."]
+            ["public", "Public transport", "Reading, review, optional extensive listening."],
+            ["quiet", "Quiet writing mode", "Reading, grammar, and writing."]
           ].map(([id, title, desc]) => `
             <button class="choice ${context === id ? "selected" : ""}" data-action="select-context" data-context="${id}">
               <strong>${title}</strong>
@@ -1590,13 +1545,11 @@ function renderTaskPreview(task) {
 
 function taskDescription(type) {
   const map = {
-    listening: "Dutch audio first, transcript second, then a comprehension check.",
+    listening: "Optional extensive listening through an external Dutch source. No summary required.",
     reading: "Read a level-matched news text and click useful words into your sentence bank.",
     review: "Recycle due vocabulary and grammar from previous sessions.",
     grammar: "Open one grammar point from the current material, learn it, and produce with it.",
-    writing: "Write a practical short text and compare it with natural Dutch samples.",
-    speaking: "Answer a material-specific prompt through typing or recording.",
-    shadowing: "Listen and repeat lines when speaking is allowed."
+    writing: "Write a practical short text and compare it with natural Dutch samples."
   };
   return map[type] || "Focused practice.";
 }
@@ -1667,7 +1620,6 @@ function renderTask(task, material) {
 
 function taskSkill(type) {
   if (type === "review") return "grammar";
-  if (type === "shadowing") return "speaking";
   return skillNames.includes(type) ? type : "listening";
 }
 
@@ -1677,38 +1629,16 @@ function renderTaskBody(task, material) {
   if (task.type === "review") return renderReviewBlock();
   if (task.type === "grammar") return renderGrammarDetail(material.grammarPoints[0]);
   if (task.type === "writing") return renderWritingBlock();
-  if (task.type === "speaking") return renderSpeakingBlock(material);
-  if (task.type === "shadowing") return renderShadowingBlock(material);
   return "";
 }
 
 function renderListeningBlock(material) {
-  const audioSrc = getMaterialAudioSrc(material);
-  const sourceReady = hasSourcePlayback(audioSrc);
-  const transcriptText = material.transcript.join(" ");
   return `
     <div class="material">
       <div class="listen-box">
-        <div class="actions">
-          <button class="btn primary" data-action="play-source-audio" data-src="${escapeHtml(audioSrc)}" data-text="${escapeHtml(transcriptText)}" data-rate="1" ${sourceReady ? "" : "disabled"}>Play full audio</button>
-          <button class="btn secondary" data-action="play-source-audio" data-src="${escapeHtml(audioSrc)}" data-text="${escapeHtml(transcriptText)}" data-rate="0.75" ${sourceReady ? "" : "disabled"}>Play slower</button>
-          <button class="btn secondary" data-action="stop-source-audio">Stop audio</button>
-        </div>
-        <p class="hint" style="margin-top:10px">Use the transcript only after your first listening pass.${audioSrc ? " Source audio may be AI-generated Dutch speech." : ""}${sourceReady ? "" : " Dutch source audio is not installed yet."}</p>
+        <p class="hint">This is optional extensive listening. Open one outside Dutch source if you have energy. Your core training remains reading, vocabulary, grammar, and writing.</p>
       </div>
       ${renderExternalListening(material)}
-      <details>
-        <summary>Transcript</summary>
-        <div style="margin-top:10px">
-          ${material.transcript.map((line, index) => `
-            <div class="transcript-line">
-              <span class="line-number">${index + 1}</span>
-              <span>${renderAnnotatedText(material, line)}</span>
-            </div>
-          `).join("")}
-        </div>
-      </details>
-      ${renderQuestion(material.question, "listening")}
     </div>
   `;
 }
@@ -1741,7 +1671,6 @@ function renderReadingBlock(material) {
         <article class="article">${renderAnnotatedText(material)}</article>
       </div>
       <aside class="side-stack">
-        ${renderExternalListening(material, true)}
         <div class="card">
           <h3>Target terms</h3>
           <div class="pill-row">
@@ -2010,19 +1939,12 @@ function renderShadowLine(material, line, index, level) {
 
 function renderReading() {
   const material = currentMaterial();
-  const audioSrc = getMaterialAudioSrc(material);
-  const sourceReady = hasSourcePlayback(audioSrc);
-  const transcriptText = material.transcript.join(" ");
   return `
     <section class="page-head">
       <div>
         <p class="eyebrow">Reading</p>
         <h1>${escapeHtml(material.title)}</h1>
         <p class="lead">Click words to save them. Click highlighted grammar structures when the sentence itself becomes the problem.</p>
-      </div>
-      <div class="actions">
-        <button class="btn secondary" data-action="play-source-audio" data-src="${escapeHtml(audioSrc)}" data-text="${escapeHtml(transcriptText)}" data-rate="1" ${sourceReady ? "" : "disabled"}>Play article</button>
-        <button class="btn secondary" data-action="stop-source-audio">Stop audio</button>
       </div>
     </section>
     <section class="panel">
@@ -2268,11 +2190,6 @@ function renderProgress() {
 
     <section class="panel" style="margin-top:16px">
       ${renderContentPolicy()}
-    </section>
-
-    <section class="panel" style="margin-top:16px">
-      <h2>External listening notes</h2>
-      ${renderListeningLog(10)}
     </section>
   `;
 }

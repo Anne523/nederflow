@@ -4,18 +4,15 @@ NederFlow is a mobile-friendly prototype for a personal Dutch learning coach. Th
 
 ## What is included
 
-- Placement check split by listening, reading, grammar, writing, and speaking.
+- Placement check split by listening, reading, grammar, and writing.
 - Session builder based on available time and context.
 - Public transport mode with no speaking tasks.
-- Listening practice with real-audio-file support and Dutch browser speech synthesis as a fallback.
-- External Dutch listening links for real public audio/video sources when no local audio pack is installed.
-- External listening notes that save source, comprehension, new words, sentence patterns, and one Dutch summary sentence.
+- Optional extensive-listening links for real public Dutch sources.
 - Reading practice with clickable vocabulary.
-- Inline grammar highlights inside reading text and transcripts.
+- Inline grammar highlights inside reading text.
 - Vocabulary cards with English meaning, usage, examples, and review dates.
 - Active-recall vocabulary review with cloze sentences and answer checking.
 - Grammar-on-demand cards with source context, English/Chinese explanation, translated examples, exercises, and output prompts.
-- Shadowing practice with easy/normal/challenge sentence banks, source-audio support, browser microphone recording, and playback.
 - A simple recycling queue for words and grammar points.
 - Practical writing prompts with writing feedback preview.
 - Progress tracking in browser local storage.
@@ -53,10 +50,6 @@ Fastest route:
 
 The app is PWA-ready through `manifest.webmanifest` and `service-worker.js`. True home-screen installation and offline caching are most reliable when the app is served from HTTPS, such as a later GitHub Pages, Netlify, or Vercel deployment.
 
-## Dutch source audio
-
-NederFlow uses `audio-manifest.js` to find real Dutch MP3 files before trying browser text-to-speech. This is the long-term fix for phones that pronounce Dutch text with an English voice. See `AUDIO_PIPELINE.md`.
-
 ## Content strategy
 
 The current materials are controlled training texts designed for the prototype. They are not scraped from the open web. Future versions should combine:
@@ -65,15 +58,12 @@ The current materials are controlled training texts designed for the prototype. 
 - Curated lawful real-world input for authenticity.
 - User-imported texts for personal study.
 
-External listening links point to public Dutch sources such as NOS Jeugdjournaal, NPO Radio 1, and Oefenen.nl. NederFlow links out to those sources instead of copying or scraping their content.
-
-In v0.6.2, external listening notes feed back into the learner's review loop: saved words enter vocabulary review, and recognized grammar patterns enter grammar recycling.
+External listening links point to public Dutch sources such as NOS Jeugdjournaal, NPO Radio 1, and Oefenen.nl. NederFlow links out to those sources instead of copying or scraping their content. In v0.6.3, those links are deliberately treated as optional extensive listening, not as the main A2-B1 training path.
 
 ## Next implementation steps
 
-1. Generate and publish the first real Dutch audio pack.
+1. Expand the controlled A2-B1 reading and writing library.
 2. Add AI vocabulary and grammar explanations for unknown words.
-3. Add AI writing correction and conversation practice.
+3. Add AI writing correction.
 4. Connect a database so progress syncs across devices.
-5. Add a curated or RSS-based Dutch news ingestion pipeline.
-6. Replace prototype placement scoring with a more rigorous adaptive test.
+5. Replace prototype placement scoring with a more rigorous adaptive test.
