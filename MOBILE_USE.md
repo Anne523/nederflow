@@ -50,5 +50,5 @@ The app can be installed from browsers that support PWA installation. For reliab
 - Chrome/Edge on Android: best PWA support.
 - Safari on iPhone: use Share -> Add to Home Screen.
 - Microphone recording may require HTTPS or a browser-approved local context.
-- The `Play source` button uses the browser's built-in text-to-speech API. Some mobile browsers do not expose it on local network pages. If it says text-to-speech is unavailable, recording and replaying your own voice can still work, but source audio needs a supported browser or a later real-audio backend.
+- The `Play source` button uses the browser's built-in text-to-speech API. NederFlow now only plays source text if the phone exposes a Dutch voice. If no Dutch voice is found, it will not use an English voice to read Dutch. Install/enable a Dutch system voice on the phone, or wait for a later real-audio backend.
 - Direct in-page microphone recording usually requires HTTPS on phones. When you open the app through `http://192.168...`, NederFlow shows `Record/upload` instead. Use it to open the phone's recorder or choose an audio file, then replay it inside the app.
