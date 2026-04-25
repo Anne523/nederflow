@@ -1,5 +1,6 @@
 ﻿const STORAGE_KEY = "nederflow.v01";
 
+const APP_VERSION = "v0.5.1";
 const levelOrder = ["A1", "A2", "A2+", "B1-", "B1", "B1+", "B2-", "B2", "B2+", "C1"];
 const skillNames = ["listening", "reading", "grammar", "writing", "speaking"];
 
@@ -823,6 +824,13 @@ function speakDutch(text, rate = 0.9) {
   window.speechSynthesis.speak(utterance);
 }
 
+function stopSourceAudio() {
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+    showToast("Source playback stopped.");
+  }
+}
+
 function hasTextToSpeech() {
   return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window && Boolean(getDutchVoice());
 }
@@ -1119,6 +1127,7 @@ function renderDashboard() {
         <p class="eyebrow">Today</p>
         <h1>Your Dutch training flow</h1>
         <p class="lead">Build listening strength first, recycle old words and grammar, and move output practice into moments when speaking is actually possible.</p>
+        <p class="hint">App version: ${APP_VERSION}</p>
       </div>
       <div class="actions">
         <button class="btn secondary" data-action="start-placement">${profile.placementComplete ? "Retake placement" : "Start placement"}</button>
@@ -1698,6 +1707,9 @@ function renderShadowingBlock(material) {
       <div class="feedback">
         <h3>Shadowing loop</h3>
         <p class="hint">Play one short line, repeat it aloud, record yourself, then listen back. These lines are separate from the article because reading-level sentences are often too hard for speaking practice.</p>
+        <div class="actions" style="margin-top:10px">
+          <button class="btn secondary" data-action="stop-source-audio">Stop source audio</button>
+        </div>
         ${ttsReady ? "" : `
           <div class="feedback warn" style="margin-top:10px">
             <strong>Dutch source voice unavailable</strong>
@@ -1763,6 +1775,7 @@ function renderShadowLine(material, line, index) {
           <span class="shadow-text">${renderAnnotatedText(material, line)}</span>
           <div class="shadow-controls">
             <button class="btn secondary" data-action="speak" data-text="${escapeHtml(line)}" data-rate="${rate}" ${ttsReady ? "" : "disabled"}>Play source</button>
+            <button class="btn secondary" data-action="stop-source-audio">Stop source</button>
             ${directRecordingReady
               ? (isRecording
                 ? `<button class="btn danger" data-action="stop-shadow-recording">Stop</button>`
@@ -2186,6 +2199,9 @@ document.addEventListener("click", (event) => {
     render();
   }
   if (action === "speak") speakDutch(target.dataset.text, Number(target.dataset.rate) || 0.9);
+  if (action === "stop-source-audio") {
+    stopSourceAudio();
+  }
   if (action === "start-shadow-recording") {
     startShadowRecording(target.dataset.recordingId);
   }

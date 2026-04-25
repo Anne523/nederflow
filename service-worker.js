@@ -1,4 +1,4 @@
-const CACHE_NAME = "nederflow-v05";
+const CACHE_NAME = "nederflow-v051";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -6,7 +6,9 @@ const CORE_ASSETS = [
   "./content.js",
   "./app.js",
   "./manifest.webmanifest",
-  "./assets/icon.svg"
+  "./assets/icon.svg",
+  "./assets/icon-192.png",
+  "./assets/icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
