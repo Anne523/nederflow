@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0f766e">
+    <meta name="description" content="A personal Dutch learning coach for adaptive listening, reading, vocabulary, grammar, writing, and speaking practice.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="NederFlow">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>NederFlow - Dutch Learning Coach</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/icon.svg">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#dashboard" aria-label="NederFlow dashboard">
+          <span class="brand-mark">NF</span>
+          <span>
+            <strong>NederFlow</strong>
+            <small>Personal Dutch coach</small>
+          </span>
+        </a>
+        <nav class="nav-tabs" aria-label="Primary">
+          <a href="#dashboard" data-nav="dashboard">Today</a>
+          <a href="#setup" data-nav="setup">Session</a>
+          <a href="#reading" data-nav="reading">Reading</a>
+          <a href="#vocabulary" data-nav="vocabulary">Vocabulary</a>
+          <a href="#grammar" data-nav="grammar">Grammar</a>
+          <a href="#writing" data-nav="writing">Writing</a>
+          <a href="#progress" data-nav="progress">Progress</a>
+        </nav>
+      </header>
+
+      <main id="app" class="main" aria-live="polite"></main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="content.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
