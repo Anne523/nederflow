@@ -58,10 +58,10 @@
     <main>
       <h1>Updating NederFlow</h1>
       <p id="status">Clearing old app cache...</p>
-      <p>Target version: <code>v0.6.0</code></p>
+      <p>Target version: <code>v0.6.1</code></p>
       <div class="actions">
         <button id="retry" type="button">Clear cache again</button>
-        <a href="./index.html?v=0.6.0">Open NederFlow</a>
+        <a href="./index.html?v=0.6.1">Open NederFlow</a>
       </div>
     </main>
     <script>
@@ -78,7 +78,7 @@
           }
           status.textContent = "Old cache cleared. Opening the latest version...";
           setTimeout(() => {
-            window.location.replace("./index.html?v=0.6.0");
+            window.location.replace("./index.html?v=0.6.1");
           }, 900);
         } catch (error) {
           status.textContent = "Could not fully clear cache. Use the Open NederFlow button below.";

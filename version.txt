@@ -1,1 +1,1 @@
-NederFlow v0.6.0
+NederFlow v0.6.1

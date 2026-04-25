@@ -1,6 +1,6 @@
 ﻿const STORAGE_KEY = "nederflow.v01";
 
-const APP_VERSION = "v0.6.0";
+const APP_VERSION = "v0.6.1";
 const levelOrder = ["A1", "A2", "A2+", "B1-", "B1", "B1+", "B2-", "B2", "B2+", "C1"];
 const skillNames = ["listening", "reading", "grammar", "writing", "speaking"];
 
@@ -470,6 +470,50 @@ const writingPrompts = [
 const contentLibrary = window.NEDERFLOW_CONTENT || {};
 hydrateContentLibrary(contentLibrary);
 const audioManifest = window.NEDERFLOW_AUDIO || { materials: {}, shadowing: {} };
+const externalListeningResources = {
+  "transport-delay": [
+    {
+      label: "NOS Jeugdjournaal",
+      url: "https://jeugdjournaal.nl/",
+      note: "Short daily Dutch news videos. Good when you want real speech but still manageable input."
+    }
+  ],
+  "city-bikes": [
+    {
+      label: "NOS Jeugdjournaal",
+      url: "https://jeugdjournaal.nl/",
+      note: "Use one city or society item, then return here for vocabulary and grammar recycling."
+    }
+  ],
+  "school-language": [
+    {
+      label: "NOS Jeugdjournaal",
+      url: "https://jeugdjournaal.nl/",
+      note: "Education and youth news items are often clearer than adult radio news."
+    }
+  ],
+  "clinic-appointment": [
+    {
+      label: "Station Nederlands: De podcast",
+      url: "https://overoefenen.nl/programmas/station-nederlands-de-podcast/",
+      note: "Everyday Dutch situations, including healthcare, work, and school."
+    }
+  ],
+  "research-meeting": [
+    {
+      label: "NPO Radio 1",
+      url: "https://www.nporadio1.nl/",
+      note: "Real radio speech for higher-level listening. Use short fragments only."
+    }
+  ],
+  "municipal-letter": [
+    {
+      label: "NOS Jeugdjournaal",
+      url: "https://jeugdjournaal.nl/",
+      note: "Pick one public-information or society news video and mine it for phrases."
+    }
+  ]
+};
 
 let shadowRecorder = null;
 let shadowChunks = [];
@@ -832,6 +876,27 @@ function getMaterialAudioSrc(material) {
 
 function getShadowAudioSrc(material, level, index) {
   return audioManifest.shadowing?.[material.id]?.[level]?.[index] || "";
+}
+
+function getExternalListeningResources(material) {
+  return material.externalListening || externalListeningResources[material.id] || [];
+}
+
+function renderExternalListening(material, compact = false) {
+  const resources = getExternalListeningResources(material);
+  if (!resources.length) return "";
+  return `
+    <div class="feedback ${compact ? "" : "good"}" style="margin-top:${compact ? "10px" : "14px"}">
+      <h3>External Dutch listening</h3>
+      <p class="hint">Open one real Dutch source, listen briefly, then come back here for vocabulary, grammar, and output practice.</p>
+      <div class="actions" style="margin-top:10px">
+        ${resources.map((resource) => `
+          <a class="btn secondary" href="${escapeHtml(resource.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(resource.label)}</a>
+        `).join("")}
+      </div>
+      ${resources.map((resource) => `<p class="hint" style="margin-top:8px">${escapeHtml(resource.note)}</p>`).join("")}
+    </div>
+  `;
 }
 
 function hasSourcePlayback(src = "") {
@@ -1521,6 +1586,7 @@ function renderListeningBlock(material) {
         </div>
         <p class="hint" style="margin-top:10px">Use the transcript only after your first listening pass.${audioSrc ? " Source audio may be AI-generated Dutch speech." : ""}${sourceReady ? "" : " Dutch source audio is not installed yet."}</p>
       </div>
+      ${renderExternalListening(material)}
       <details>
         <summary>Transcript</summary>
         <div style="margin-top:10px">
@@ -1565,6 +1631,7 @@ function renderReadingBlock(material) {
         <article class="article">${renderAnnotatedText(material)}</article>
       </div>
       <aside class="side-stack">
+        ${renderExternalListening(material, true)}
         <div class="card">
           <h3>Target terms</h3>
           <div class="pill-row">
