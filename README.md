@@ -7,13 +7,13 @@ NederFlow is a mobile-friendly prototype for a personal Dutch learning coach. Th
 - Placement check split by listening, reading, grammar, writing, and speaking.
 - Session builder based on available time and context.
 - Public transport mode with no speaking tasks.
-- Listening practice using the browser speech synthesis API.
+- Listening practice with real-audio-file support and Dutch browser speech synthesis as a fallback.
 - Reading practice with clickable vocabulary.
 - Inline grammar highlights inside reading text and transcripts.
 - Vocabulary cards with English meaning, usage, examples, and review dates.
 - Active-recall vocabulary review with cloze sentences and answer checking.
 - Grammar-on-demand cards with source context, English/Chinese explanation, translated examples, exercises, and output prompts.
-- Shadowing practice with easy/normal/challenge sentence banks, browser microphone recording, and playback.
+- Shadowing practice with easy/normal/challenge sentence banks, source-audio support, browser microphone recording, and playback.
 - A simple recycling queue for words and grammar points.
 - Practical writing prompts with writing feedback preview.
 - Progress tracking in browser local storage.
@@ -51,6 +51,10 @@ Fastest route:
 
 The app is PWA-ready through `manifest.webmanifest` and `service-worker.js`. True home-screen installation and offline caching are most reliable when the app is served from HTTPS, such as a later GitHub Pages, Netlify, or Vercel deployment.
 
+## Dutch source audio
+
+NederFlow uses `audio-manifest.js` to find real Dutch MP3 files before trying browser text-to-speech. This is the long-term fix for phones that pronounce Dutch text with an English voice. See `AUDIO_PIPELINE.md`.
+
 ## Content strategy
 
 The current materials are controlled training texts designed for the prototype. They are not scraped from the open web. Future versions should combine:
@@ -61,7 +65,7 @@ The current materials are controlled training texts designed for the prototype. 
 
 ## Next implementation steps
 
-1. Add real Dutch audio files or a TTS backend.
+1. Generate and publish the first real Dutch audio pack.
 2. Add AI vocabulary and grammar explanations for unknown words.
 3. Add AI writing correction and conversation practice.
 4. Connect a database so progress syncs across devices.

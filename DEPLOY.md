@@ -46,9 +46,16 @@ At minimum:
 - `styles.css`
 - `app.js`
 - `content.js`
+- `audio-manifest.js`
 - `manifest.webmanifest`
 - `service-worker.js`
 - `assets/icon.svg`
+- `assets/icon-192.png`
+- `assets/icon-512.png`
+
+If you generated real source audio, also upload:
+
+- `assets/audio/`
 
 Optional but useful:
 

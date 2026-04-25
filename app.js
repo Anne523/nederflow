@@ -1,6 +1,6 @@
 ﻿const STORAGE_KEY = "nederflow.v01";
 
-const APP_VERSION = "v0.5.5";
+const APP_VERSION = "v0.6.0";
 const levelOrder = ["A1", "A2", "A2+", "B1-", "B1", "B1+", "B2-", "B2", "B2+", "C1"];
 const skillNames = ["listening", "reading", "grammar", "writing", "speaking"];
 
@@ -469,6 +469,7 @@ const writingPrompts = [
 
 const contentLibrary = window.NEDERFLOW_CONTENT || {};
 hydrateContentLibrary(contentLibrary);
+const audioManifest = window.NEDERFLOW_AUDIO || { materials: {}, shadowing: {} };
 
 let shadowRecorder = null;
 let shadowChunks = [];
@@ -482,6 +483,7 @@ let deferredInstallPrompt = null;
 let canInstallPwa = false;
 let availableVoices = [];
 let dutchVoice = null;
+let sourceAudio = null;
 
 function defaultState() {
   return {
@@ -807,15 +809,15 @@ function showToast(message) {
 
 function speakDutch(text, rate = 0.9) {
   if (!hasTextToSpeech()) {
-    showToast("Text-to-speech is unavailable in this browser. Recording playback still works after you record.");
+    showToast("Dutch source audio is unavailable here. Recording playback still works after you record.");
     return;
   }
   const voice = getDutchVoice();
   if (!voice) {
-    showToast("No Dutch text-to-speech voice found. Enable/install a Dutch voice on this phone, or wait for real audio in a later version.");
+    showToast("No Dutch text-to-speech voice found. NederFlow will not use an English voice for Dutch.");
     return;
   }
-  window.speechSynthesis.cancel();
+  stopSourceAudio(false);
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "nl-NL";
   utterance.voice = voice;
@@ -824,9 +826,42 @@ function speakDutch(text, rate = 0.9) {
   window.speechSynthesis.speak(utterance);
 }
 
-function stopSourceAudio() {
+function getMaterialAudioSrc(material) {
+  return audioManifest.materials?.[material.id]?.full || "";
+}
+
+function getShadowAudioSrc(material, level, index) {
+  return audioManifest.shadowing?.[material.id]?.[level]?.[index] || "";
+}
+
+function hasSourcePlayback(src = "") {
+  return Boolean(src) || hasTextToSpeech();
+}
+
+function playSourceAudio(src, fallbackText, rate = 1) {
+  stopSourceAudio(false);
+  if (src) {
+    sourceAudio = new Audio(src);
+    sourceAudio.playbackRate = rate;
+    sourceAudio.play().catch(() => {
+      showToast("Audio file could not play. Trying Dutch text-to-speech.");
+      speakDutch(fallbackText, rate);
+    });
+    return;
+  }
+  speakDutch(fallbackText, rate);
+}
+
+function stopSourceAudio(showMessage = true) {
+  if (sourceAudio) {
+    sourceAudio.pause();
+    sourceAudio.currentTime = 0;
+    sourceAudio = null;
+  }
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
+  }
+  if (showMessage) {
     showToast("Source playback stopped.");
   }
 }
@@ -1473,15 +1508,18 @@ function renderTaskBody(task, material) {
 }
 
 function renderListeningBlock(material) {
+  const audioSrc = getMaterialAudioSrc(material);
+  const sourceReady = hasSourcePlayback(audioSrc);
+  const transcriptText = material.transcript.join(" ");
   return `
     <div class="material">
       <div class="listen-box">
         <div class="actions">
-          <button class="btn primary" data-action="speak-material" data-material-id="${material.id}">Play full audio</button>
-          <button class="btn secondary" data-action="speak-material-slow" data-material-id="${material.id}">Play slower</button>
+          <button class="btn primary" data-action="play-source-audio" data-src="${escapeHtml(audioSrc)}" data-text="${escapeHtml(transcriptText)}" data-rate="1" ${sourceReady ? "" : "disabled"}>Play full audio</button>
+          <button class="btn secondary" data-action="play-source-audio" data-src="${escapeHtml(audioSrc)}" data-text="${escapeHtml(transcriptText)}" data-rate="0.75" ${sourceReady ? "" : "disabled"}>Play slower</button>
           <button class="btn secondary" data-action="stop-source-audio">Stop audio</button>
         </div>
-        <p class="hint" style="margin-top:10px">Use the transcript only after your first listening pass.</p>
+        <p class="hint" style="margin-top:10px">Use the transcript only after your first listening pass.${audioSrc ? " Source audio may be AI-generated Dutch speech." : ""}${sourceReady ? "" : " Dutch source audio is not installed yet."}</p>
       </div>
       <details>
         <summary>Transcript</summary>
@@ -1702,6 +1740,7 @@ function defaultSpeakingPrompt(material) {
 function renderShadowingBlock(material) {
   const level = selectedShadowingLevel();
   const lines = getShadowingLines(material, level);
+  const hasLineAudio = lines.some((line, index) => getShadowAudioSrc(material, level, index));
   const ttsReady = hasTextToSpeech();
   return `
     <div class="material">
@@ -1711,10 +1750,10 @@ function renderShadowingBlock(material) {
         <div class="actions" style="margin-top:10px">
           <button class="btn secondary" data-action="stop-source-audio">Stop source audio</button>
         </div>
-        ${ttsReady ? "" : `
+        ${ttsReady || hasLineAudio ? "" : `
           <div class="feedback warn" style="margin-top:10px">
-            <strong>Dutch source voice unavailable</strong>
-            <p class="hint">This browser or phone does not currently expose a Dutch text-to-speech voice. NederFlow will not use an English voice for Dutch. You can still record and replay your own voice; source audio will need a Dutch system voice or a later real-audio backend.</p>
+            <strong>Dutch source audio unavailable</strong>
+            <p class="hint">This browser or phone does not expose a Dutch text-to-speech voice, and the real-audio pack is not installed yet. NederFlow will not use an English voice for Dutch. You can still record and replay your own voice.</p>
           </div>
         `}
         <div class="pill-row" style="margin-top:10px">
@@ -1737,7 +1776,7 @@ function renderShadowingBlock(material) {
         </div>
       </div>
       ${lines.map((line, index) => `
-        ${renderShadowLine(material, line, index)}
+        ${renderShadowLine(material, line, index, level)}
       `).join("")}
     </div>
   `;
@@ -1763,19 +1802,20 @@ function getShadowingLines(material, level) {
   return bank[level] || bank.easy || material.transcript.slice(0, 4);
 }
 
-function renderShadowLine(material, line, index) {
+function renderShadowLine(material, line, index, level) {
   const id = `${material.id}-${index}`;
   const recording = shadowRecordings.get(id);
   const isRecording = activeShadowId === id && shadowRecorder?.state === "recording";
   const rate = shadowingRateValue();
-  const ttsReady = hasTextToSpeech();
+  const audioSrc = getShadowAudioSrc(material, level, index);
+  const sourceReady = hasSourcePlayback(audioSrc);
   const directRecordingReady = hasDirectMicrophoneRecording();
   return `
         <div class="transcript-line">
           <span class="line-number">${index + 1}</span>
           <span class="shadow-text">${renderAnnotatedText(material, line)}</span>
           <div class="shadow-controls">
-            <button class="btn secondary" data-action="speak" data-text="${escapeHtml(line)}" data-rate="${rate}" ${ttsReady ? "" : "disabled"}>Play source</button>
+            <button class="btn secondary" data-action="play-source-audio" data-src="${escapeHtml(audioSrc)}" data-text="${escapeHtml(line)}" data-rate="${rate}" ${sourceReady ? "" : "disabled"}>Play source</button>
             <button class="btn secondary" data-action="stop-source-audio">Stop source</button>
             ${directRecordingReady
               ? (isRecording
@@ -1793,6 +1833,9 @@ function renderShadowLine(material, line, index) {
 
 function renderReading() {
   const material = currentMaterial();
+  const audioSrc = getMaterialAudioSrc(material);
+  const sourceReady = hasSourcePlayback(audioSrc);
+  const transcriptText = material.transcript.join(" ");
   return `
     <section class="page-head">
       <div>
@@ -1801,7 +1844,7 @@ function renderReading() {
         <p class="lead">Click words to save them. Click highlighted grammar structures when the sentence itself becomes the problem.</p>
       </div>
       <div class="actions">
-        <button class="btn secondary" data-action="speak-material" data-material-id="${material.id}">Play article</button>
+        <button class="btn secondary" data-action="play-source-audio" data-src="${escapeHtml(audioSrc)}" data-text="${escapeHtml(transcriptText)}" data-rate="1" ${sourceReady ? "" : "disabled"}>Play article</button>
         <button class="btn secondary" data-action="stop-source-audio">Stop audio</button>
       </div>
     </section>
@@ -2201,6 +2244,9 @@ document.addEventListener("click", (event) => {
     render();
   }
   if (action === "speak") speakDutch(target.dataset.text, Number(target.dataset.rate) || 0.9);
+  if (action === "play-source-audio") {
+    playSourceAudio(target.dataset.src || "", target.dataset.text || "", Number(target.dataset.rate) || 1);
+  }
   if (action === "stop-source-audio") {
     stopSourceAudio();
   }
@@ -2218,11 +2264,11 @@ document.addEventListener("click", (event) => {
   }
   if (action === "speak-material") {
     const material = getMaterial(target.dataset.materialId);
-    speakDutch(material.transcript.join(" "), 0.92);
+    playSourceAudio(getMaterialAudioSrc(material), material.transcript.join(" "), 0.92);
   }
   if (action === "speak-material-slow") {
     const material = getMaterial(target.dataset.materialId);
-    speakDutch(material.transcript.join(" "), 0.72);
+    playSourceAudio(getMaterialAudioSrc(material), material.transcript.join(" "), 0.72);
   }
   if (action === "check-question") {
     const selected = document.querySelector(`input[name="${target.dataset.name}"]:checked`);

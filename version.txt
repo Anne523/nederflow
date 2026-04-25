@@ -1,2 +1,1 @@
-﻿NederFlow v0.5.5
-
+NederFlow v0.6.0
