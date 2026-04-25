@@ -479,6 +479,8 @@ let activeSpeakingId = null;
 const speakingRecordings = new Map();
 let deferredInstallPrompt = null;
 let canInstallPwa = false;
+let availableVoices = [];
+let dutchVoice = null;
 
 function defaultState() {
   return {
@@ -807,16 +809,34 @@ function speakDutch(text, rate = 0.9) {
     showToast("Text-to-speech is unavailable in this browser. Recording playback still works after you record.");
     return;
   }
+  const voice = getDutchVoice();
+  if (!voice) {
+    showToast("No Dutch text-to-speech voice found. Enable/install a Dutch voice on this phone, or wait for real audio in a later version.");
+    return;
+  }
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "nl-NL";
+  utterance.voice = voice;
   utterance.rate = rate;
   utterance.pitch = 1;
   window.speechSynthesis.speak(utterance);
 }
 
 function hasTextToSpeech() {
-  return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window && Boolean(getDutchVoice());
+}
+
+function loadVoices() {
+  if (!("speechSynthesis" in window)) return;
+  availableVoices = window.speechSynthesis.getVoices() || [];
+  dutchVoice = availableVoices.find((voice) => /^nl(-|_)?/i.test(voice.lang)) ||
+    availableVoices.find((voice) => /dutch|nederlands|netherlands|belg/i.test(`${voice.name} ${voice.lang}`));
+}
+
+function getDutchVoice() {
+  if (!dutchVoice) loadVoices();
+  return dutchVoice;
 }
 
 function shadowingRateValue() {
@@ -1680,8 +1700,8 @@ function renderShadowingBlock(material) {
         <p class="hint">Play one short line, repeat it aloud, record yourself, then listen back. These lines are separate from the article because reading-level sentences are often too hard for speaking practice.</p>
         ${ttsReady ? "" : `
           <div class="feedback warn" style="margin-top:10px">
-            <strong>Text-to-speech unavailable</strong>
-            <p class="hint">This mobile browser cannot play the Dutch source voice through the built-in Web Speech API. You can still record and replay your own voice; source audio will need a browser with TTS support or a later real-audio backend.</p>
+            <strong>Dutch source voice unavailable</strong>
+            <p class="hint">This browser or phone does not currently expose a Dutch text-to-speech voice. NederFlow will not use an English voice for Dutch. You can still record and replay your own voice; source audio will need a Dutch system voice or a later real-audio backend.</p>
           </div>
         `}
         <div class="pill-row" style="margin-top:10px">
@@ -2325,6 +2345,14 @@ document.addEventListener("change", (event) => {
 });
 
 window.addEventListener("hashchange", render);
+
+if ("speechSynthesis" in window) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = () => {
+    loadVoices();
+    render();
+  };
+}
 
 window.addEventListener("beforeinstallprompt", (event) => {
   event.preventDefault();
