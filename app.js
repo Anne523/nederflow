@@ -1,6 +1,6 @@
 ﻿const STORAGE_KEY = "nederflow.v01";
 
-const APP_VERSION = "v0.6.1";
+const APP_VERSION = "v0.6.2";
 const levelOrder = ["A1", "A2", "A2+", "B1-", "B1", "B1+", "B2-", "B2", "B2+", "C1"];
 const skillNames = ["listening", "reading", "grammar", "writing", "speaking"];
 
@@ -572,6 +572,7 @@ function defaultState() {
     grammarFocus: [],
     sessions: [],
     currentSession: null,
+    listeningLog: [],
     writingHistory: []
   };
 }
@@ -775,7 +776,7 @@ function addDays(days) {
   return date.toISOString().slice(0, 10);
 }
 
-function addVocab(term, sourceSentence = "") {
+function addVocab(term, sourceSentence = "", silent = false) {
   const normalized = normalizeTerm(term);
   if (!normalized) return;
   const exists = state.vocab.find((item) => item.term === normalized);
@@ -805,7 +806,7 @@ function addVocab(term, sourceSentence = "") {
     });
   }
   saveState();
-  showToast(`Added "${normalized}" to vocabulary recycling.`);
+  if (!silent) showToast(`Added "${normalized}" to vocabulary recycling.`);
 }
 
 function markVocab(term, result) {
@@ -822,7 +823,7 @@ function markVocab(term, result) {
   return item;
 }
 
-function addGrammarFocus(id) {
+function addGrammarFocus(id, silent = false) {
   if (!grammarCatalog[id]) return;
   const exists = state.grammarFocus.find((item) => item.id === id);
   if (exists) {
@@ -840,7 +841,63 @@ function addGrammarFocus(id) {
     });
   }
   saveState();
-  showToast(`${grammarCatalog[id].title} added to grammar recycling.`);
+  if (!silent) showToast(`${grammarCatalog[id].title} added to grammar recycling.`);
+}
+
+function detectGrammarFromText(text) {
+  const lower = text.toLowerCase();
+  const ids = [];
+  if (/\bomdat\b/.test(lower)) ids.push("omdat");
+  if (/\bhoewel\b/.test(lower)) ids.push("hoewel");
+  if (/\bom\b.+\bte\b|\bte\s+[a-z]+en\b/.test(lower)) ids.push("teInfinitive");
+  if (/\ber\s+wordt\b|\bwordt\b.+\b(gedaan|gemaakt|besproken|gebouwd|ingevoerd|gewerkt|uitgelegd)\b/.test(lower)) ids.push("passive");
+  if (/\b(daarvoor|daarmee|daarover|daarvan|erover|ervoor|ermee|hiervoor|hiermee)\b/.test(lower)) ids.push("erWords");
+  if (/\b(invullen|aanmelden|opstaan|meedoen|terugkomen)\b|\b(vul|meld|sta|doe|neem|kom)\b.+\b(in|aan|op|mee|terug)\b/.test(lower)) ids.push("separable");
+  return [...new Set(ids)];
+}
+
+function parseListInput(value) {
+  return String(value || "")
+    .split(/[\n,;]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function saveExternalListening(form) {
+  const data = new FormData(form);
+  const material = getMaterial(String(data.get("materialId") || ""));
+  const source = String(data.get("source") || "").trim();
+  const comprehension = String(data.get("comprehension") || "medium");
+  const words = parseListInput(data.get("words"));
+  const patterns = parseListInput(data.get("patterns"));
+  const summary = String(data.get("summary") || "").trim();
+  if (!source && !words.length && !patterns.length && !summary) {
+    showToast("Add at least a source, word, pattern, or Dutch summary.");
+    return;
+  }
+
+  const sourceSentence = summary || `External listening: ${source || material.title}`;
+  words.forEach((word) => addVocab(word, sourceSentence, true));
+  detectGrammarFromText(`${patterns.join(" ")} ${summary}`).forEach((id) => addGrammarFocus(id, true));
+
+  state.listeningLog.unshift({
+    id: `listening-${Date.now()}`,
+    date: todayKey(),
+    materialId: material.id,
+    materialTitle: material.title,
+    source,
+    comprehension,
+    words: words.map(normalizeTerm),
+    patterns,
+    summary
+  });
+  state.listeningLog = state.listeningLog.slice(0, 30);
+  state.profile.minutesToday += 5;
+  state.profile.totalMinutes += 5;
+  saveState();
+  showToast("External listening saved. 5 minutes added.");
+  form.reset();
+  render();
 }
 
 function showToast(message) {
@@ -885,6 +942,7 @@ function getExternalListeningResources(material) {
 function renderExternalListening(material, compact = false) {
   const resources = getExternalListeningResources(material);
   if (!resources.length) return "";
+  const latest = state.listeningLog.find((item) => item.materialId === material.id);
   return `
     <div class="feedback ${compact ? "" : "good"}" style="margin-top:${compact ? "10px" : "14px"}">
       <h3>External Dutch listening</h3>
@@ -895,6 +953,37 @@ function renderExternalListening(material, compact = false) {
         `).join("")}
       </div>
       ${resources.map((resource) => `<p class="hint" style="margin-top:8px">${escapeHtml(resource.note)}</p>`).join("")}
+      <form id="externalListening-${escapeHtml(material.id)}" class="external-listening-form" style="margin-top:12px">
+        <input type="hidden" name="materialId" value="${escapeHtml(material.id)}">
+        <div class="form-field">
+          <label for="source-${escapeHtml(material.id)}">Source listened to</label>
+          <input id="source-${escapeHtml(material.id)}" type="text" name="source" placeholder="NOS video title, podcast episode, or link">
+        </div>
+        <div class="form-field">
+          <label for="comprehension-${escapeHtml(material.id)}">Comprehension</label>
+          <select id="comprehension-${escapeHtml(material.id)}" name="comprehension">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="words-${escapeHtml(material.id)}">New words</label>
+          <input id="words-${escapeHtml(material.id)}" type="text" name="words" placeholder="vertraging, maatregel, onderweg">
+        </div>
+        <div class="form-field">
+          <label for="patterns-${escapeHtml(material.id)}">Useful sentence patterns</label>
+          <input id="patterns-${escapeHtml(material.id)}" type="text" name="patterns" placeholder="omdat..., hoewel..., er wordt...">
+        </div>
+        <div class="form-field">
+          <label for="summary-${escapeHtml(material.id)}">One-sentence Dutch summary</label>
+          <textarea id="summary-${escapeHtml(material.id)}" name="summary" placeholder="Write one short Dutch sentence about what you heard."></textarea>
+        </div>
+        <div class="actions">
+          <button class="btn primary" type="submit">Save listening note</button>
+        </div>
+      </form>
+      ${latest ? `<p class="hint" style="margin-top:10px">Last saved: ${escapeHtml(latest.date)} · ${escapeHtml(latest.comprehension)} comprehension</p>` : ""}
     </div>
   `;
 }
@@ -1283,6 +1372,11 @@ function renderDashboard() {
         ${renderMaterialSummary(selectMaterial())}
       </article>
     </section>
+
+    <section class="panel" style="margin-top:16px">
+      <h2>Recent external listening</h2>
+      ${renderListeningLog(3)}
+    </section>
   `;
 }
 
@@ -1319,6 +1413,22 @@ function renderMaterialSummary(material) {
       </div>
     </div>
   `;
+}
+
+function renderListeningLog(limit = 5) {
+  const entries = state.listeningLog.slice(0, limit);
+  if (!entries.length) {
+    return `<p class="hint">No external listening notes yet.</p>`;
+  }
+  return entries.map((entry) => `
+    <div class="feedback" style="margin-bottom:10px">
+      <strong>${escapeHtml(entry.source || entry.materialTitle || "External listening")}</strong>
+      <p class="hint">${escapeHtml(entry.date)} · ${escapeHtml(entry.comprehension)} comprehension · ${escapeHtml(entry.materialTitle || "")}</p>
+      ${entry.summary ? `<p>${escapeHtml(entry.summary)}</p>` : ""}
+      ${entry.words?.length ? `<div class="pill-row">${entry.words.map((word) => `<span class="pill good">${escapeHtml(word)}</span>`).join("")}</div>` : ""}
+      ${entry.patterns?.length ? `<p class="hint" style="margin-top:8px"><strong>Patterns:</strong> ${escapeHtml(entry.patterns.join("; "))}</p>` : ""}
+    </div>
+  `).join("");
 }
 
 function sourceTypeLabel(type) {
@@ -2159,6 +2269,11 @@ function renderProgress() {
     <section class="panel" style="margin-top:16px">
       ${renderContentPolicy()}
     </section>
+
+    <section class="panel" style="margin-top:16px">
+      <h2>External listening notes</h2>
+      ${renderListeningLog(10)}
+    </section>
   `;
 }
 
@@ -2440,6 +2555,11 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("submit", (event) => {
+  if (event.target.classList?.contains("external-listening-form")) {
+    event.preventDefault();
+    saveExternalListening(event.target);
+    return;
+  }
   if (event.target.id !== "placementForm") return;
   event.preventDefault();
   const data = new FormData(event.target);

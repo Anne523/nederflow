@@ -9,6 +9,7 @@ NederFlow is a mobile-friendly prototype for a personal Dutch learning coach. Th
 - Public transport mode with no speaking tasks.
 - Listening practice with real-audio-file support and Dutch browser speech synthesis as a fallback.
 - External Dutch listening links for real public audio/video sources when no local audio pack is installed.
+- External listening notes that save source, comprehension, new words, sentence patterns, and one Dutch summary sentence.
 - Reading practice with clickable vocabulary.
 - Inline grammar highlights inside reading text and transcripts.
 - Vocabulary cards with English meaning, usage, examples, and review dates.
@@ -64,7 +65,9 @@ The current materials are controlled training texts designed for the prototype. 
 - Curated lawful real-world input for authenticity.
 - User-imported texts for personal study.
 
-In v0.6.1, external listening links point to public Dutch sources such as NOS Jeugdjournaal, NPO Radio 1, and Oefenen.nl. NederFlow links out to those sources instead of copying or scraping their content.
+External listening links point to public Dutch sources such as NOS Jeugdjournaal, NPO Radio 1, and Oefenen.nl. NederFlow links out to those sources instead of copying or scraping their content.
+
+In v0.6.2, external listening notes feed back into the learner's review loop: saved words enter vocabulary review, and recognized grammar patterns enter grammar recycling.
 
 ## Next implementation steps
 

@@ -584,7 +584,8 @@ h3 {
 }
 
 textarea,
-input[type="text"] {
+input[type="text"],
+select {
   width: 100%;
   min-height: 44px;
   padding: 11px 12px;
@@ -594,10 +595,18 @@ input[type="text"] {
   color: var(--ink);
 }
 
+select {
+  min-height: 42px;
+}
+
 textarea {
   min-height: 128px;
   resize: vertical;
   line-height: 1.5;
+}
+
+.external-listening-form textarea {
+  min-height: 90px;
 }
 
 .radio-stack {
